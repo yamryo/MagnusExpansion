@@ -1,9 +1,9 @@
 #
 # MagnusExp.rb
 #
-# Time-stamp: <2012-10-02 13:27:33 (ryosuke)>
+# Time-stamp: <2012-10-02 14:46:51 (ryosuke)>
 #
-$LOAD_PATH.push File.expand_path('~/rubyP/GLA/src')
+$LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
 require('FormalSum')
 

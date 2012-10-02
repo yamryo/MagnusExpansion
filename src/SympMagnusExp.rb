@@ -1,9 +1,9 @@
 #
 # SympMagnusExp.rb
 #
-# Time-stamp: <2012-10-02 14:05:51 (ryosuke)>
+# Time-stamp: <2012-10-02 14:47:06 (ryosuke)>
 #
-$LOAD_PATH.push File.expand_path('~/rubyP/GLA/src')
+$LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'./../lib/GLA/src/')
 
 require('LieBracket')
 
