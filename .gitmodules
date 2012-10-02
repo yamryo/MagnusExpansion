@@ -1,0 +1,3 @@
+[submodule "lib/GLA"]
+	path = lib/GLA
+	url = https://github.com/yamryo/GLA.git

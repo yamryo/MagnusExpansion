@@ -1,9 +1,9 @@
 #
 # FoxCalc.rb
 #
-# Time-stamp: <2012-10-02 13:08:38 (ryosuke)>
+# Time-stamp: <2012-10-02 14:26:47 (ryosuke)>
 #
-$LOAD_PATH.push File.expand_path('~/ruby/GLA/src')
+$LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'./../lib/GLA/src/')
 
 require('FormalSum')
 
