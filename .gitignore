@@ -1,0 +1,6 @@
+*~
+*.orig
+#*#
+.#*
+*.orig
+/vendor/bundle
