@@ -1,7 +1,7 @@
 #
 # StdMagnusExp_spec.rb
 #
-# Time-stamp: <2012-10-02 11:43:35 (ryosuke)>
+# Time-stamp: <2012-10-02 13:29:42 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 

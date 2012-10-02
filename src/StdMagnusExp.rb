@@ -1,7 +1,7 @@
 #
 # StdMagnusExp.rb
 #
-# Time-stamp: <2012-10-02 11:53:34 (ryosuke)>
+# Time-stamp: <2012-10-02 13:29:53 (ryosuke)>
 #
 
 require('MagnusExp')
@@ -16,7 +16,7 @@ class StdMagnusExp
   end
   attr_accessor :mod_deg
 
-  def higher(gfs)
+  def higher(*gfs)
     Zero
   end
 

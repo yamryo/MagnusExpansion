@@ -1,7 +1,7 @@
 #
 # SympMagnusExp_spec.rb
 #
-# Time-stamp: <2012-10-02 11:46:54 (ryosuke)>
+# Time-stamp: <2012-10-02 14:07:11 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 
@@ -23,7 +23,7 @@ describe SympMagnusExp do
   describe "#expand" do
     before :all do
       @gen_a = Generator.new('a')
-       @gen_1 = Generator.new('1')
+      @gen_1 = Generator.new('1')
      end
      #  
     context "return a FormalSum" do
@@ -31,29 +31,29 @@ describe SympMagnusExp do
       it { should be_kind_of(FormalSum) }
     end
     #
-#     context "for generators" do
-#       context "theta_std('a')" do
-#         subject { Theta_symp.expand(@gen_a.dup).to_s }
-#         it { should == '1+a'}
-#       end
-#       #
-#       context "theta_std('A')" do
-#         subject { Theta_symp.expand(@gen_a.inverse).to_s }
-#         it { should == '1-a+aa-aaa'}
-#       end
-#       #
-#       context "theta_std('1')" do
-#         subject { Theta_symp.expand(@gen_1).to_s }
-#         it { should == '1'}
-#       end
-#     end
-#     #
-#     context "theta_std('ab')" do
-#       # theta_std('ab') = (1+a)(1+b) = 1+a+b+ab
-#       subject { Theta_symp.expand(Word.new('ab')).to_s }
-#       it { should == '1+a+b+ab'}
-#     end
-#     #
+    context "for generators" do
+      context "theta_std('a')" do
+        subject { Theta_symp.expand(@gen_a.dup).to_s }
+        it { should == '1+a'}
+      end
+      #
+      context "theta_std('A')" do
+        subject { Theta_symp.expand(@gen_a.inverse).to_s }
+        it { should == '1-a+aa-aaa'}
+      end
+      #
+      context "theta_std('1')" do
+        subject { Theta_symp.expand(@gen_1).to_s }
+        it { should == '1'}
+      end
+    end
+    #
+    context "theta_std('ab')" do
+      # theta_std('ab') = (1+a)(1+b) = 1+a+b+ab
+      subject { Theta_symp.expand(Word.new('ab')).to_s }
+      it { should == '1+a+b+ab'}
+    end
+    #
 #     context "theta_std('aA')" do
 #       subject { Theta_symp.expand(Word.new('aA')).to_s }
 #       it { should == '1'}

@@ -1,8 +1,11 @@
 #
 # SympMagnusExp.rb
 #
-# Time-stamp: <2012-10-02 11:41:03 (ryosuke)>
+# Time-stamp: <2012-10-02 14:05:51 (ryosuke)>
 #
+$LOAD_PATH.push File.expand_path('~/rubyP/GLA/src')
+
+require('LieBracket')
 
 require('MagnusExp')
 require('singleton')
@@ -16,14 +19,16 @@ class SympMagnusExp
   end
   attr_accessor :mod_deg
   
-  def higher(gen)
+  def higher(gfs)
     #--TODO-- How should the higher part of symplectic expansions be written for a given Generator?
-    deg2, deg3 = Term.new(gen*gen, 1), Term.new(gen*gen*gen, 1)
-    FormalSum.new(deg2,deg3)
+    # lb = LieBracket.new(gfs, gfs).expand
+    # return lb+LieBracket.new(gfs,lb).expand
+    return gfs*gfs*2
   end
   
-  def higher_inverse(gen) 
+  def higher_inverse(gfs) 
     #--TODO--
+    gfs*gfs
   end
 
 end

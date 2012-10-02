@@ -1,8 +1,9 @@
 #
 # MagnusExp.rb
 #
-# Time-stamp: <2012-10-02 11:55:01 (ryosuke)>
+# Time-stamp: <2012-10-02 13:27:33 (ryosuke)>
 #
+$LOAD_PATH.push File.expand_path('~/rubyP/GLA/src')
 
 require('FormalSum')
 
@@ -35,13 +36,13 @@ module Expander
   end
   
   def map(gen)
-    # maps a Generator x to a FormalSum 1+X+c_2*X^2.
-    # The image of x^{-1} is found automaticaly.
+    # maps a Generator x to a FormalSum 1+X+higher(x).
+    # higher(g) will be a method of a class which includes this module. higher_inverse(g) too.
     #
     gen = Generator.new(gen[0]) if gen.is_a?(String)  # Strings are acceptable
     raise ArgumentError, "The argument is not a Generator" unless gen.is_a?(Generator)
     #
-    g = FormalSum.new(gen.letter)
+    g = FormalSum.new(Term.new(gen.letter))
     fsOne = FormalSum.new(One)
     return case gen.inverse?
            when false then fsOne + g + higher(g)
