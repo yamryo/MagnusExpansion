@@ -1,7 +1,7 @@
 #
 # SympMagnusExp.rb
 #
-# Time-stamp: <2012-10-02 14:47:06 (ryosuke)>
+# Time-stamp: <2014-01-21 11:19:42 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'./../lib/GLA/src/')
 
@@ -14,7 +14,7 @@ require('singleton')
 class SympMagnusExp 
   include Expander, Singleton
   
-  def initialize(m=4)
+  def initialize(m=2)
     @mod_deg = m
   end
   attr_accessor :mod_deg
@@ -23,12 +23,13 @@ class SympMagnusExp
     #--TODO-- How should the higher part of symplectic expansions be written for a given Generator?
     # lb = LieBracket.new(gfs, gfs).expand
     # return lb+LieBracket.new(gfs,lb).expand
-    return gfs*gfs*2
+    #return gfs*gfs*2
+    return (1/2)*gfs*gfs #+log2(gfs)
   end
   
   def higher_inverse(gfs) 
     #--TODO--
-    gfs*gfs
+    (1/2)*gfs*gfs
   end
 
 end
