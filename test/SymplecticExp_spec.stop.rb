@@ -1,14 +1,14 @@
 #
 # SympMagnusExp_spec.rb
 #
-# Time-stamp: <2014-01-21 11:18:58 (ryosuke)>
+# Time-stamp: <2014-02-04 11:50:48 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 
 require('pry')
 require('pry-nav')
 
-require('SympMagnusExp')
+require('SymplecticExp')
 
 Theta_symp = SympMagnusExp.instance
 
