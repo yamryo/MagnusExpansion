@@ -1,11 +1,9 @@
-source :rubygems
+source 'https://rubygems.org'
+#source :rubygems
 
 group :development do
   gem 'pry'
   gem 'pry-nav'
-#  gem 'guard-ronn'
-#  gem 'yard'
-#  gem 'redcarpet'
 #
   platform :ruby_19 do
     gem 'coolline'
