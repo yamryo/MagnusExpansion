@@ -1,12 +1,12 @@
 #
 # GrouplikeExp_spec.rb
 #
-# Time-stamp: <2014-02-04 15:30:02 (ryosuke)>
+# Time-stamp: <2014-03-12 18:39:10 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 
 require('pry')
-require('pry-nav')
+require('pry-debugger')
 
 require('GrouplikeExp')
 #require('LieBracket')

@@ -1,12 +1,12 @@
 #
 # log2_spec.rb
 #
-# Time-stamp: <2014-02-04 11:24:48 (ryosuke)>
+# Time-stamp: <2014-03-12 18:39:19 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 
 require('pry')
-require('pry-nav')
+require('pry-debugger')
 
 require('StdMagnusExp')
 

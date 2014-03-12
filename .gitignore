@@ -1,5 +1,9 @@
 *~
-*#*#
-*.#*
+\#*#
+.#*
 *.orig
 /vendor/bundle
+/test/OLD
+/src/TODO
+/tmp
+.ruby-version

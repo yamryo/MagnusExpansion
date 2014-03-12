@@ -1,12 +1,12 @@
 #
 # FoxCalc_spec.rb
 #
-# Time-stamp: <2012-10-01 11:14:50 (ryosuke)>
+# Time-stamp: <2014-03-12 18:38:48 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 
 require('pry')
-require('pry-nav')
+require('pry-debugger')
 
 require('FoxCalc')
 
