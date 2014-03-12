@@ -1,12 +1,12 @@
 #
 # StdMagnusExp_spec.rb
 #
-# Time-stamp: <2014-03-12 18:39:29 (ryosuke)>
+# Time-stamp: <2014-03-12 18:51:12 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 
 require('pry')
-require('pry-debugger')
+require('pry-byebug')
 
 require('StdMagnusExp')
 
