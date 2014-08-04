@@ -1,3 +1,4 @@
 # /.rspec
---format nested
+--format documentation
 --color
+--drb
