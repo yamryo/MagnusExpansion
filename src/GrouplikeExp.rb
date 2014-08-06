@@ -1,7 +1,7 @@
 #
 # GrouplikeExp.rb
 #
-# Time-stamp: <2014-02-04 15:22:19 (ryosuke)>
+# Time-stamp: <2014-08-06 13:35:11 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -31,7 +31,7 @@ class GrouplikeExp
   end
 
   def log2(gen)
-    return case gen.to_c
+    return case gen.to_char
            when 'a' then @lb1
            when 'b' then @lb1*(-1)
            when 's' then @lb2

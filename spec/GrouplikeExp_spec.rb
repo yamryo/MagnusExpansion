@@ -1,75 +1,67 @@
 #
 # GrouplikeExp_spec.rb
 #
-# Time-stamp: <2014-03-12 18:50:52 (ryosuke)>
+# Time-stamp: <2014-08-06 13:35:00 (ryosuke)>
 #
-$LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
-
-require('pry')
-require('pry-byebug')
+require('spec_helper')
 
 require('GrouplikeExp')
 #require('LieBracket')
 #require('FormalSum')
 
-Theta_gl = GrouplikeExp.instance
+describe "GrouplikeExp" do
+  Theta_gl = GrouplikeExp.instance
 
-#---------------------------------
-describe "#log2" do
-  before :all do
-    @gen_1 = Generator.new('1')
-    @gen_a = Generator.new('a')
-    @gen_b = Generator.new('b')
-    @gen_s = Generator.new('s')
-    @gen_t = Generator.new('t')
-    @gen_x = Generator.new('x')
-    @gen_y = Generator.new('y')
-  end
-  #  
-#  context "return Zero for 1" do
-#    it { Theta_gl.log2(@gen_1).should == Zero }
-#  end
-  #
-  context "return a LieBracket" do
-    subject { Theta_gl.log2(@gen_x) }
-    it { should be_kind_of(LieBracket) }
-  end
-  #
-  describe "for generators" do
+  #---------------------------------
+  describe "#log2" do
+    before :all do
+      @gen_1 = Generator.new('1')
+      @gen_a, @gen_b = Generator.new('a'), Generator.new('b')
+      @gen_s, @gen_t = Generator.new('s'), Generator.new('t')
+      @gen_x, @gen_y = Generator.new('x'), Generator.new('y')
+    end
+    #  
+    #  context "return Zero for 1" do
+    #    it { expect(Theta_gl.log2(@gen_1)).to eq Zero }
+    #  end
+    #
+    it "returns a LieBracket" do
+      expect(Theta_gl.log2(@gen_x)).to be_kind_of LieBracket
+    end
+    #
+    context "of generators" do
 
-    context "return a [x,y] for x" do
-      it { Theta_gl.log2(@gen_a).to_s.should == '[a,b]' }
-      it { Theta_gl.log2(@gen_s).to_s.should == '[s,t]' }
-      it { Theta_gl.log2(@gen_x).to_s.should == '[x,y]' }
+      it "returns a [x,y] for x" do
+        expect( Theta_gl.log2(@gen_a).to_s).to eq '[a,b]'
+        expect( Theta_gl.log2(@gen_s).to_s).to eq '[s,t]'
+        expect( Theta_gl.log2(@gen_x).to_s).to eq '[x,y]'
+      end
+      #
+      it "returns a -[x,y] for y" do
+        expect( Theta_gl.log2(@gen_b).to_s).to eq '-[a,b]'
+        expect( Theta_gl.log2(@gen_t).to_s).to eq '-[s,t]'
+        expect( Theta_gl.log2(@gen_y).to_s).to eq '-[x,y]'
+      end
+      #
     end
-  #
-    context "return a -[x,y] for y" do
-      it { Theta_gl.log2(@gen_b).to_s.should == '-[a,b]' }
-      it { Theta_gl.log2(@gen_t).to_s.should == '-[s,t]' }
-      it { Theta_gl.log2(@gen_y).to_s.should == '-[x,y]' }
+    #
+    context "for words" do
+      before(:all){ @word_ax = Word.new('ax') } 
+      #
+      xit "returns a [a,b]+[x,y]+[a,x] for the word 'ax'" do
+        expect(Theta_gl.log2(@word_ax).to_s).to eq '[a,b]+[x,y]+[a,x]'
+      end
     end
-  #
+    #
   end
-  #
-  describe "for words" do
-    before :all do 
-      @word_ax = Word.new('ax')
-    end
-  #
-    context "return a [a,b]+[x,y]+[a,x] for ax" do
-      subject{ Theta_gl.log2(@word_ax).to_s }
-      it { should == '[a,b]+[x,y]+[a,x]' }
-    end
-  end
-  #
+
 end
-
-  # #---------------------------------
-  # describe "" do
-  #   context "" do
-  #     int { }
-  #   end
-  # end
-  # #---------------------------------
+# #---------------------------------
+# describe "" do
+#   context "" do
+#     int { }
+#   end
+# end
+# #---------------------------------
 
 #End of File

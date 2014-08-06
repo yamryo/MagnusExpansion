@@ -1,12 +1,9 @@
 #
 # log2_spec.rb
 #
-# Time-stamp: <2014-03-12 18:51:00 (ryosuke)>
+# Time-stamp: <2014-08-05 10:59:10 (ryosuke)>
 #
-$LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
-
-require('pry')
-require('pry-byebug')
+require('spec_helper')
 
 require('StdMagnusExp')
 
@@ -21,7 +18,7 @@ describe "#log2" do
   #  
   context "return a FormalSum" do
     subject { Theta_std.log2(@gen_a) }
-    it { should be_kind_of(FormalSum) }
+    it { is_expected.to be_kind_of(FormalSum) }
   end
   #
 end

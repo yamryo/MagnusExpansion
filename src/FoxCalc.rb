@@ -1,7 +1,7 @@
 #
 # FoxCalc.rb
 #
-# Time-stamp: <2012-10-02 14:46:32 (ryosuke)>
+# Time-stamp: <2014-08-06 14:21:44 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -19,7 +19,7 @@ module FoxCalculator
     else
       @generator = Generator.new('1')
     end
-    @generator.inverse if @generator.inverse? 
+    @generator.invert! if @generator.inverse? 
   end
   attr_reader :generator
 
@@ -38,7 +38,7 @@ module FoxCalculator
     raise ArgumentError, "The argument is not a word." unless gen.class == Generator
 
     if @generator.letter == gen.letter then
-      !gen.inverse? ? One : Term.new(gen.to_c, -1)
+      !gen.inverse? ? One : Term.new(gen.to_char, -1)
     else 
       return Zero
     end

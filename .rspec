@@ -1,4 +1,3 @@
 # /.rspec
---format documentation
 --color
---drb
+--format documentation
