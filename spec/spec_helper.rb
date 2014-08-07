@@ -2,7 +2,7 @@
 #
 # spec_helper.rb
 # 
-# Time-stamp: <2014-08-05 11:10:47 (ryosuke)>
+# Time-stamp: <2014-08-07 11:58:20 (ryosuke)>
 
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__) + '/../src')
 

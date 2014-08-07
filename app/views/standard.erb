@@ -1,0 +1,11 @@
+<p>Standard Magnus expansion<br><br>
+<%=
+    if (params['word'].empty?) then
+      "'Input a word!'"
+    else
+      theta = StdMagnusExp.instance
+      w = Word.new(params['word'])
+      "#{params['word']}  -->  #{theta.expand(w).to_s}"
+    end
+%>
+</p>

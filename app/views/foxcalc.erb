@@ -1,0 +1,8 @@
+<p>Fox Calculas<br><br>
+<%=
+    g = Generator.new(params['gen'])
+    w = Word.new(params['word'])
+    fc = FoxCalculator[g]
+    "#{params['word']}  --[#{params['gen']}]-->  #{fc.send(w).to_s}"
+%>
+</p>

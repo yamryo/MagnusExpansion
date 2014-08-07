@@ -1,12 +1,13 @@
 #
 # scratch.rb
 #
-# Time-stamp: <2014-08-06 14:21:19 (ryosuke)>
+# Time-stamp: <2014-08-07 14:03:07 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src')
 require('pry')
 require('pry-byebug')
 
+require('FoxCalc')
 require('StdMagnusExp')
 require('LieBracket')
 
