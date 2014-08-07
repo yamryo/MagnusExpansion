@@ -1,7 +1,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2014-08-08 00:02:21 (ryosuke)>
+# Time-stamp: <2014-08-08 01:18:44 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 require('sinatra/base')
@@ -22,7 +22,6 @@ class MyApp < Sinatra::Base
 
   #--- POST --------
   post('/Standard') do
-    params['word'] ||= params[:message]
     erb :standard
   end
   post('/FoxCalc') do

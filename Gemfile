@@ -10,6 +10,7 @@ group :development do
   gem 'guard-livereload'
   gem 'rack-livereload'
   gem 'foreman'
+  gem 'haml'
 end
 
 group :test do
