@@ -1,7 +1,13 @@
-<p>Standard Magnus expansion<br><br>
+<p>Standard Magnus expansion</p>
+  Input a word:
+<form action="/Standard" method="post">
+<input type="text" name="message">
+<input type="submit">
+</form>
+<p>
 <%=
-    if (params['word'].empty?) then
-      "'Input a word!'"
+    if (params['word'].nil? || params['word'].empty?) then
+#      "Input a word bellow."
     else
       theta = StdMagnusExp.instance
       w = Word.new(params['word'])
