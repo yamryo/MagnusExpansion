@@ -1,14 +1,12 @@
-<p>Standard Magnus expansion</p>
-  Input a word:
+<blockquote>Standard Magnus expansion</blockquote>
+Input a word:
 <form action="/Standard" method="post">
 <input type="text" name="word">
 <input type="submit">
 </form>
 <p>
 <%=
-    if (params['word'].nil? || params['word'].empty?) then
-#      "Input a word bellow."
-    else
+    unless (params['word'].nil? || params['word'].empty?) then
       theta = StdMagnusExp.instance
       w = Word.new(params['word'])
       "#{params['word']}  -->  #{theta.expand(w).to_s}"

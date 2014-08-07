@@ -1,4 +1,4 @@
-<p>Fox Calculas</p>
+<blockquote>Fox Calculas</blockquote>
 Input a word and a generator:
 <form action="/FoxCalc" method="post">
 d<input type="word" name="word">/d<input type="gen" name="gen">
@@ -6,9 +6,11 @@ d<input type="word" name="word">/d<input type="gen" name="gen">
 </form>
 <p>
 <%=
-  g = (params['gen'].nil?) ? Generator.new('a') : Generator.new(params['gen'])
-  w = (params['word'].nil?) ? Word.new('a') : Word.new(params['word'])
-  fc = FoxCalculator[g]
-  "#{w.to_s}  --(d/d#{g.to_char})-->  #{fc.send(w).to_s}"
+  unless (params['word'].nil? || params['word'].empty?) then
+    g = (params['gen'].nil?) ? Generator.new('a') : Generator.new(params['gen'])
+    w = (params['word'].nil?) ? Word.new('a') : Word.new(params['word'])
+    fc = FoxCalculator[g]
+    "#{w.to_s}  --(d/d#{g.to_char})-->  #{fc.send(w).to_s}"
+  end
 %>
 </p>

@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="ja">
-      <head>
-      <meta charset="utf-8">
-      <title>Magnus Expansion Calculator</title>
-      </head>
-      <body>
-      <link href="styles.css" type="text/css" rel="stylesheet" />
-<!-- <script src="main.js" type="text/javascript"></script> -->
-      <h1>Magnus Expansion Calculator</h1>
+  <head>
+    <meta charset="utf-8">
+    <title>Magnus Expansion Calculator</title>
+    <link href="styles.css" type="text/css" rel="stylesheet" />
+  </head>
+  
+  <body>
+    <!-- <script src="main.js" type="text/javascript"></script> -->
+    
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/"> Magnus Expansion Calculator</a>
+        </div>
+      </div>
+    </div>
+    <br><br><br>
+    
+    <div class="container">
       <%= yield %>
       <p>
 	<a href="http://localhost:4567/FoxCalc">Foxcalc</a>
-	<a href="http://localhost:4567/Standard/">Standard</a>
+	<a href="http://localhost:4567/Standard">Standard</a>
       </p>
-      </body>
+    </div>
+    
+  </body>
+  
 </html>
-

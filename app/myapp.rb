@@ -1,7 +1,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2014-08-08 01:18:44 (ryosuke)>
+# Time-stamp: <2014-08-08 02:00:34 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 require('sinatra/base')
@@ -16,7 +16,7 @@ class MyApp < Sinatra::Base
   get('/more/*'){ params[:splat] }
   #get('/form'){ erb :form }
   #---
-  get('/FoxCalc/?:word?/?:gen?'){erb :foxcalc }
+  get('/FoxCalc/?:word?/?:gen?'){ erb :foxcalc }
   get('/Standard/?:word?'){ erb :standard }
   #-----------------
 
