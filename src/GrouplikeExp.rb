@@ -1,7 +1,7 @@
 #
 # GrouplikeExp.rb
 #
-# Time-stamp: <2014-08-08 10:12:40 (ryosuke)>
+# Time-stamp: <2014-08-08 18:36:50 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -30,7 +30,23 @@ class GrouplikeExp
     gfs*gfs-gfs*gfs*gfs
   end
 
-  def log2(gen)
+  def log2(word)
+    lb_arr = []
+    case word
+    when Generator then
+      return log2_calc(word)
+    when Word, String then
+      #binding.pry
+      word.each_char do |g|
+        lb_arr << log2_calc(Generator.new(g))
+      end
+      return lb_arr
+    else Zero
+    end
+  end
+
+  private
+  def log2_calc(gen)
     return case gen.to_char
            when 'a','B' then @lb1
            when 'b','A' then @lb1*(-1)

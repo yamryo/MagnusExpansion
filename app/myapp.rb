@@ -1,7 +1,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2014-08-08 09:38:59 (ryosuke)>
+# Time-stamp: <2014-08-08 15:36:07 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 require('sinatra/base')
@@ -12,6 +12,13 @@ require('GrouplikeExp')
 
 #---------------------------
 class MyApp < Sinatra::Base
+
+  #--- Helpers -----
+  def active_page?(path='')
+    request.path_info == '/' + path
+  end
+  #-----------------
+
   #--- GET ---------
   get('/'){ erb :index }
   get('/more/*'){ params[:splat] }
