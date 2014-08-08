@@ -1,7 +1,7 @@
 #
 # GrouplikeExp_spec.rb
 #
-# Time-stamp: <2014-08-08 10:14:57 (ryosuke)>
+# Time-stamp: <2014-08-08 12:36:17 (ryosuke)>
 #
 require('spec_helper')
 
@@ -44,15 +44,15 @@ describe "GrouplikeExp" do
       end
       #
       it "returns a -[x,y] for X" do
-        expect( Theta_gl.log2(@gen_a).to_s).to eq '-1/2[a,b]'
-        expect( Theta_gl.log2(@gen_s).to_s).to eq '-1/2[s,t]'
-        expect( Theta_gl.log2(@gen_x).to_s).to eq '-1/2[x,y]'
+        expect( Theta_gl.log2(@gen_a.invert!).to_s).to eq '-1/2[a,b]'
+        expect( Theta_gl.log2(@gen_s.invert!).to_s).to eq '-1/2[s,t]'
+        expect( Theta_gl.log2(@gen_x.invert!).to_s).to eq '-1/2[x,y]'
       end
       #
       it "returns a [x,y] for Y" do
-        expect( Theta_gl.log2(@gen_b).to_s).to eq '1/2[a,b]'
-        expect( Theta_gl.log2(@gen_t).to_s).to eq '1/2[s,t]'
-        expect( Theta_gl.log2(@gen_y).to_s).to eq '1/2[x,y]'
+        expect( Theta_gl.log2(@gen_b.invert!).to_s).to eq '1/2[a,b]'
+        expect( Theta_gl.log2(@gen_t.invert!).to_s).to eq '1/2[s,t]'
+        expect( Theta_gl.log2(@gen_y.invert!).to_s).to eq '1/2[x,y]'
       end
       #
     end
