@@ -1,0 +1,17 @@
+<blockquote>Group-like Magnus expansion</blockquote>
+Input a word:
+<form action="/Grouplike" method="post">
+<input type="text" name="word">
+<input type="submit">
+</form>
+<p>
+<%=
+    unless (params['word'].nil? || params['word'].empty?) then
+      theta = GrouplikeExp.instance
+#      w = Word.new(params['word'])
+#      "#{params['word']}  -->  #{theta.expand(w).to_s}"
+      g = Generator.new(params['word'])
+      "#{params['word'][0]}  -->  #{theta.log2(g).to_s}"
+    end
+%>
+</p>

@@ -1,13 +1,14 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2014-08-08 02:00:34 (ryosuke)>
+# Time-stamp: <2014-08-08 09:38:59 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 require('sinatra/base')
 
 require('FoxCalc')
 require('StdMagnusExp')
+require('GrouplikeExp')
 
 #---------------------------
 class MyApp < Sinatra::Base
@@ -18,15 +19,13 @@ class MyApp < Sinatra::Base
   #---
   get('/FoxCalc/?:word?/?:gen?'){ erb :foxcalc }
   get('/Standard/?:word?'){ erb :standard }
+  get('/Grouplike/?:word?'){ erb :grouplike }
   #-----------------
 
   #--- POST --------
-  post('/Standard') do
-    erb :standard
-  end
-  post('/FoxCalc') do
-    erb :foxcalc
-  end
+  post('/Standard'){ erb :standard }
+  post('/FoxCalc'){ erb :foxcalc }
+  post('/Grouplike'){ erb :grouplike }
   #-----------------
 
   #--- NOT FOUND ---
