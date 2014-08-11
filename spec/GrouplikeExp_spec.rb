@@ -1,7 +1,7 @@
 #
 # GrouplikeExp_spec.rb
 #
-# Time-stamp: <2014-08-08 15:58:57 (ryosuke)>
+# Time-stamp: <2014-08-12 00:07:37 (ryosuke)>
 #
 require('spec_helper')
 
@@ -16,9 +16,6 @@ describe "GrouplikeExp" do
   describe "#log2" do
     before :all do
       @gen_1 = Generator.new('1')
-      @gen_a, @gen_b = Generator.new('a'), Generator.new('b')
-      @gen_s, @gen_t = Generator.new('s'), Generator.new('t')
-      @gen_x, @gen_y = Generator.new('x'), Generator.new('y')
     end
     #  
     #  context "return Zero for 1" do
@@ -26,32 +23,38 @@ describe "GrouplikeExp" do
     #  end
     #
     context "of generators a,b,s,t,x,y " do
+      before :all do
+        @gen_1 = Generator.new('1')
+        @gen_a, @gen_b = Generator.new('a'), Generator.new('b')
+        @gen_s, @gen_t = Generator.new('s'), Generator.new('t')
+        @gen_x, @gen_y = Generator.new('x'), Generator.new('y')
+      end
       it "are LieBrackets" do
         expect(Theta_gl.log2(@gen_x)).to be_kind_of LieBracket
       end
     #
-      it "is a [x,y] for x" do
-        expect( Theta_gl.log2(@gen_a).to_s).to eq '1/2[a,b]'
-        expect( Theta_gl.log2(@gen_s).to_s).to eq '1/2[s,t]'
-        expect( Theta_gl.log2(@gen_x).to_s).to eq '1/2[x,y]'
+      it "is a [|x|,|y|] for x" do
+        expect( Theta_gl.log2(@gen_a).to_s).to eq '1/2[|a|,|b|]'
+        expect( Theta_gl.log2(@gen_s).to_s).to eq '1/2[|s|,|t|]'
+        expect( Theta_gl.log2(@gen_x).to_s).to eq '1/2[|x|,|y|]'
       end
       #
-      it "is a -[x,y] for y" do
-        expect( Theta_gl.log2(@gen_b).to_s).to eq '-1/2[a,b]'
-        expect( Theta_gl.log2(@gen_t).to_s).to eq '-1/2[s,t]'
-        expect( Theta_gl.log2(@gen_y).to_s).to eq '-1/2[x,y]'
+      it "is a -[|x|,|y|] for y" do
+        expect( Theta_gl.log2(@gen_b).to_s).to eq '-1/2[|a|,|b|]'
+        expect( Theta_gl.log2(@gen_t).to_s).to eq '-1/2[|s|,|t|]'
+        expect( Theta_gl.log2(@gen_y).to_s).to eq '-1/2[|x|,|y|]'
       end
       #
-      it "is a -[x,y] for X" do
-        expect( Theta_gl.log2(@gen_a.invert!).to_s).to eq '-1/2[a,b]'
-        expect( Theta_gl.log2(@gen_s.invert!).to_s).to eq '-1/2[s,t]'
-        expect( Theta_gl.log2(@gen_x.invert!).to_s).to eq '-1/2[x,y]'
+      it "is a -[|x|,|y|] for X" do
+        expect( Theta_gl.log2(@gen_a.invert!).to_s).to eq '-1/2[|a|,|b|]'
+        expect( Theta_gl.log2(@gen_s.invert!).to_s).to eq '-1/2[|s|,|t|]'
+        expect( Theta_gl.log2(@gen_x.invert!).to_s).to eq '-1/2[|x|,|y|]'
       end
       #
-      it "is a [x,y] for Y" do
-        expect( Theta_gl.log2(@gen_b.invert!).to_s).to eq '1/2[a,b]'
-        expect( Theta_gl.log2(@gen_t.invert!).to_s).to eq '1/2[s,t]'
-        expect( Theta_gl.log2(@gen_y.invert!).to_s).to eq '1/2[x,y]'
+      it "is a [|x|,|y|] for Y" do
+        expect( Theta_gl.log2(@gen_b.invert!).to_s).to eq '1/2[|a|,|b|]'
+        expect( Theta_gl.log2(@gen_t.invert!).to_s).to eq '1/2[|s|,|t|]'
+        expect( Theta_gl.log2(@gen_y.invert!).to_s).to eq '1/2[|x|,|y|]'
       end
       #
     end
@@ -64,15 +67,26 @@ describe "GrouplikeExp" do
     end
     #
     context "of a word" do
-      before(:all){ @lb_arr = Theta_gl.log2(@word_ax) } 
-      #
-      it "is an array of LieBracket" do
-        expect(@lb_arr).to be_kind_of Array
-        expect(@lb_arr[0]).to be_kind_of LieBracket
+      before :all do
+        @lb = 
+        @lb2 = Theta_gl.log2(Word.new('abx'))
+        @lb3 = Theta_gl.log2(Word.new('abx'))
       end
+      #
+      # it "is an array of LieBracket" do
+      #   expect(@lb).to be_kind_of Array
+      #   @lb.each{ |lb| expect(lb).to be_kind_of LieBracket } 
+      # end
     #
-      it "is a [a,b]+[x,y]+[a,x] for the word 'ax'" do
-        expect(@lb_arr.to_s).to eq '[a,b]+[x,y]+[a,x]'
+      it "works properly" do
+        deta =[
+               { word: 'ax', rst: "1/2[|a|,|b|]+1/2[|a|,|x|]+1/2[|x|,|y|]" },
+               { word: 'aB', rst: "1/2[|a|,|b|]+1/2[|a|,|B|]+1/2[|a|,|b|]" },
+               { word: 'abx', rst: "1/2[|a|,|b|]+1/2[|a|,|bx|]-1/2[|a|,|b|]+1/2[|b|,|x|]+1/2[|x|,|y|]" }
+              ]
+        deta.each do |h|
+          expect(Theta_gl.log2(Word.new(h[:word]))).to eq h[:rst]
+        end
       end
     end
     #

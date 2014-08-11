@@ -1,5 +1,4 @@
-<blockquote>Standard Magnus expansion</blockquote>
-
+<blockquote> Standard Magnus Expansion </blockquote>
 <!--  --------------------------------------------------------  -->
 <div class="panel panel-default">
 
@@ -8,17 +7,15 @@
   </div>
   
   <div class="panel-body">
-    <div class="row">
-      <form action="/Standard" method="post">
-            <div class="col-xs-4"><div class="input-group">
-            <input type="text" name="word" class="form-control">
-            </div></div>
-	    
-	    <div class="input-group">
-	    <button type="submit" class="btn btn-default">Submit</button>
-	    </div>
-      </form>
-    </div>
+    <form class="form-inline" action="/Standard" method="post">
+      <div class="col-xs-4"><div class="input-group">
+        <input type="text" name="word" class="form-control">
+      </div></div>
+	
+      <div class="input-group">
+	<button type="submit" class="btn btn-default">Submit</button>
+      </div>
+    </form>
   </div>
   
 </div>
@@ -26,12 +23,6 @@
 
 <!--  --------------------------------------------------------  -->
 <div class="bs-docs-example" data-content="OUTPUT">
-<%=
-    unless (params['word'].nil? || params['word'].empty?) then
-      theta = StdMagnusExp.instance
-      w = Word.new(params['word'])
-      "#{params['word']}  -->  #{theta.expand(w).to_s}"
-    end
-%>
+  <%= calc_std params['word'] %>
 </div>
 <!--  --------------------------------------------------------  -->

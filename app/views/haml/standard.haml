@@ -1,0 +1,6 @@
+%p Standard Magnus expansion
+Input a word:
+%form{ :action => "/Standard", :method => "post" }
+  %input{ :type => "text", :name => "message" }
+  %input{ :type => "submit" }
+%p= calc_std params['word']
