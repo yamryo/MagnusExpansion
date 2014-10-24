@@ -1,7 +1,7 @@
 #
 # GrouplikeExp_spec.rb
 #
-# Time-stamp: <2014-08-12 00:07:37 (ryosuke)>
+# Time-stamp: <2014-10-24 14:25:01 (ryosuke)>
 #
 require('spec_helper')
 
@@ -81,7 +81,8 @@ describe "GrouplikeExp" do
       it "works properly" do
         deta =[
                { word: 'ax', rst: "1/2[|a|,|b|]+1/2[|a|,|x|]+1/2[|x|,|y|]" },
-               { word: 'aB', rst: "1/2[|a|,|b|]+1/2[|a|,|B|]+1/2[|a|,|b|]" },
+               { word: 'Xy', rst: "-1/2[|x|,|y|]-1/2[|x|,|y|]-1/2[|x|,|y|]" },
+               { word: 'aB', rst: "1/2[|a|,|b|]-1/2[|a|,|b|]+1/2[|a|,|b|]" },
                { word: 'abx', rst: "1/2[|a|,|b|]+1/2[|a|,|bx|]-1/2[|a|,|b|]+1/2[|b|,|x|]+1/2[|x|,|y|]" }
               ]
         deta.each do |h|

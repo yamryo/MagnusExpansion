@@ -1,7 +1,7 @@
 #
 # GrouplikeExp.rb
 #
-# Time-stamp: <2014-08-12 00:07:58 (ryosuke)>
+# Time-stamp: <2014-10-24 14:28:28 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -41,10 +41,10 @@ class GrouplikeExp
       word = (Word.new(gen.invert!.to_char)*word).contract
       if word != '1' then
         w1, w2 = '|'+Word.new(gen.invert!.to_char)+'|', '|'+word+'|'
+        binding.pry if w1 == 'X'
         lb_arr << LieBracket.new(w1, w2)*(1/2r)
         if word.length == 1
           word = Generator.new(word)
-          #binding.pry if word.to_char == 'B'
         end
         lb_arr << self.log2(word)
       end
