@@ -1,7 +1,7 @@
 #
-# SympMagnusExp.rb
+# SymplecticExp.rb
 #
-# Time-stamp: <2014-01-21 11:19:42 (ryosuke)>
+# Time-stamp: <2014-02-04 11:49:27 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'./../lib/GLA/src/')
 

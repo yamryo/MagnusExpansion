@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<!-- HEAD --------------------------------------------------------- -->
+  <head>
+    <meta charset="utf-8">
+    <title>Magnus Expansion Calculator</title>
+    <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link href="css/bs-example.css" type="text/css" rel="stylesheet" />
+    <!-- <link href="css/docs.css" type="text/css" rel="stylesheet" /> -->
+  </head>
+<!-- -------------------------------------------------------------- -->
+  
+<!-- BODY --------------------------------------------------------- -->
+  <body>
+    <div class="navbar">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <h1 style="padding-bottom: 5px">
+	<a class="brand" href="/"> Magnus Expansion Calculator </a>
+      </h1>
+      <!-- Collection of nav links and other content for toggling -->
+      <div class="navbar-inner">
+	<ul class="nav nav-tabs">
+          <li class=<%="active" if active_page?("FoxCalc")%> >
+	    <a href="/FoxCalc">FoxCalc</a></li>
+          <li class=<%="active" if active_page?("Standard")%> >
+	    <a href="/Standard">Standard</a></li>
+          <li class=<%="active" if active_page?("Grouplike")%> >
+	    <a href="/Grouplike">Grouplike</a></li>
+	</ul>
+      </div>
+    </div>
+
+    <!-- YIELD -------------------------------------------- -->
+    <div class="container"> <%= yield %> </div>
+    <!-- -------------------------------------------------- -->
+
+    <footer class="footer"> <p><%= Time.now %> </p></footer>
+    
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src=”js/bootstrap.js”></script>
+  </body>
+<!-- -------------------------------------------------------------- -->
+
+</html>
