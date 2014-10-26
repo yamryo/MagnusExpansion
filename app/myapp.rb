@@ -1,7 +1,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2014-08-11 23:40:26 (ryosuke)>
+# Time-stamp: <2014-10-26 00:10:16 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 require('sinatra/base')
@@ -61,7 +61,23 @@ class MyApp < Sinatra::Base
   def calc_log2(w)
     unless (w.nil? || w.empty?) then
       theta = GrouplikeExp.instance
-      "#{w}  -->  #{theta.log2(Word.new(w)).to_s}"
+      lb_arr = theta.log2(Word.new(w))
+      #result = lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
+      lb_arr_smp = []
+      while (not lb_arr.empty?) do
+        lb_arr_smp << lb_arr.shift
+        k = lb_arr.index do |lb|
+              lb.inspect_couple == lb_arr_smp.last.inspect_couple
+            end
+            unless k.nil? then
+              lb_arr[k].coeff = lb_arr[k].coeff + lb_arr_smp.last.coeff
+              lb_arr_smp.pop
+            end
+            lb_arr.delete_if{ |lb| lb.coeff == 0 }
+      end
+      result = lb_arr_smp.map{|lb| lb.to_s }.join('+').gsub('+-','-')
+      result = "0" if result.empty?
+      "#{w}  -->  #{result}"
     end
   end
   #-----------------

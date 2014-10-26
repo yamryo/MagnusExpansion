@@ -1,7 +1,7 @@
 #
 # GrouplikeExp.rb
 #
-# Time-stamp: <2014-10-24 14:28:28 (ryosuke)>
+# Time-stamp: <2014-10-26 15:48:14 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -36,31 +36,69 @@ class GrouplikeExp
     when Generator then
       return log2_calc(word)
     when Word, String then
-      gen = word.gen_at(0)
-      lb_arr << self.log2(gen)
-      word = (Word.new(gen.invert!.to_char)*word).contract
-      if word != '1' then
-        w1, w2 = '|'+Word.new(gen.invert!.to_char)+'|', '|'+word+'|'
-        binding.pry if w1 == 'X'
-        lb_arr << LieBracket.new(w1, w2)*(1/2r)
-        if word.length == 1
-          word = Generator.new(word)
+      word = Word.new(word) unless word.kind_of?(Word)
+      #---
+      if word.length == 1
+        lb_arr << log2_calc(Generator.new(word))
+      else
+        first_gen = word.gen_at(0)
+        rest_of_word = (Word.new(word.gen_at(0).invert!.to_char)*word).contract
+        lb_arr << self.log2(first_gen)
+        #---
+        wa = ['|'+first_gen.to_char.downcase+'|','0']
+        #binding.pry if rest_of_word == "bx"
+        rest_of_word.each_gen do |g|
+          unless first_gen =~ g then
+            wa[1] = '|'+g.to_char.downcase+'|'
+            cf = (1/2r)*((first_gen.inverse?) ? -1 : 1)*((g.inverse?) ? -1 : 1)
+            if wa[0] > wa[1] then
+              wa.reverse!
+              cf = cf * (-1)
+            end
+            lb_arr << LieBracket.new(wa[0], wa[1])*cf
+          end
         end
-        lb_arr << self.log2(word)
+        #---
+        lb_arr << self.log2(rest_of_word)
       end
-      return lb_arr.flatten.map{ |lb| lb.to_s }.join('+').gsub('+-','-')
+      #---
+      return lb_arr.flatten.sort{|a, b| a.inspect_couple <=> b.inspect_couple }
+      #return lb_arr.flatten.map{ |lb| lb.to_s }.join('+').gsub('+-','-')
     else Zero
     end
+  end
+  #
+  def log2_simplify(word)
+    lb_arr = log2(word)
+    if lb_arr.kind_of?(LieBracket)
+      lb_arr_smp = [lb_arr]
+    else
+      lb_arr_smp = []
+      while (not lb_arr.empty?) do
+        lb_arr_smp << lb_arr.shift
+        k = lb_arr.index do |lb|
+          lb.inspect_couple == lb_arr_smp.last.inspect_couple
+        end
+        unless k.nil? then
+          lb_arr[k].coeff = lb_arr[k].coeff + lb_arr_smp.last.coeff
+          lb_arr_smp.pop
+        end
+        lb_arr.delete_if{ |lb| lb.coeff == 0 }
+      end
+    end
+    #---
+    return lb_arr_smp
   end
 
   private
   def log2_calc(gen)
+    binding.pry if @lb1.coeff == (3/2r)
     return case gen.to_char
-           when 'a','B' then @lb1
+           when 'a','B' then @lb1.dup
            when 'b','A' then @lb1*(-1)
-           when 's','T' then @lb2
+           when 's','T' then @lb2.dup
            when 't','S' then @lb2*(-1)
-           when 'x','Y' then @lb3
+           when 'x','Y' then @lb3.dup
            when 'y','X' then @lb3*(-1)
            else Zero end
   end
