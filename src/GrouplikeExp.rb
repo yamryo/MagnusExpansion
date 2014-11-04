@@ -1,7 +1,7 @@
 #
 # GrouplikeExp.rb
 #
-# Time-stamp: <2014-10-26 15:48:14 (ryosuke)>
+# Time-stamp: <2014-11-04 20:39:29 (kaigishitsu)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -46,15 +46,11 @@ class GrouplikeExp
         lb_arr << self.log2(first_gen)
         #---
         wa = ['|'+first_gen.to_char.downcase+'|','0']
-        #binding.pry if rest_of_word == "bx"
+        #binding.pry if rest_of_word == "Sb"
         rest_of_word.each_gen do |g|
           unless first_gen =~ g then
             wa[1] = '|'+g.to_char.downcase+'|'
             cf = (1/2r)*((first_gen.inverse?) ? -1 : 1)*((g.inverse?) ? -1 : 1)
-            if wa[0] > wa[1] then
-              wa.reverse!
-              cf = cf * (-1)
-            end
             lb_arr << LieBracket.new(wa[0], wa[1])*cf
           end
         end
@@ -62,14 +58,16 @@ class GrouplikeExp
         lb_arr << self.log2(rest_of_word)
       end
       #---
-      return lb_arr.flatten.sort{|a, b| a.inspect_couple <=> b.inspect_couple }
-      #return lb_arr.flatten.map{ |lb| lb.to_s }.join('+').gsub('+-','-')
+      return lb_arr.flatten
+      #return lb_arr.flatten.sort{|a, b| a.inspect_couple <=> b.inspect_couple }
     else Zero
     end
   end
   #
   def log2_simplify(word)
     lb_arr = log2(word)
+    lb_arr.map!{ |lb| (lb.couple[0] < lb.couple[1])? lb : lb.flip }
+    lb_arr.sort!{|a, b| a.inspect_couple <=> b.inspect_couple }
     if lb_arr.kind_of?(LieBracket)
       lb_arr_smp = [lb_arr]
     else
