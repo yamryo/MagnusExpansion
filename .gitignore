@@ -1,11 +1,5 @@
-*~
-\#*#
-.#*
-*.orig
 /vendor/bundle
 /test/OLD
 /src/TODO
 /tmp
-.ruby-version
 Gemfile.lock
-.DS_Store
