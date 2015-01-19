@@ -1,7 +1,7 @@
 #
 # GrouplikeExp.rb
 #
-# Time-stamp: <2014-11-04 20:39:29 (kaigishitsu)>
+# Time-stamp: <2014-11-07 11:15:11 (kaigishitsu)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -37,16 +37,16 @@ class GrouplikeExp
       return log2_calc(word)
     when Word, String then
       word = Word.new(word) unless word.kind_of?(Word)
+      first_gen = word.gen_at(0)
+      rest_of_word = (Word.new(word.gen_at(0).invert!.to_char)*word).contract
+      #binding.pry if rest_of_word == "1"
       #---
-      if word.length == 1
+      if rest_of_word == "1"
         lb_arr << log2_calc(Generator.new(word))
       else
-        first_gen = word.gen_at(0)
-        rest_of_word = (Word.new(word.gen_at(0).invert!.to_char)*word).contract
         lb_arr << self.log2(first_gen)
         #---
         wa = ['|'+first_gen.to_char.downcase+'|','0']
-        #binding.pry if rest_of_word == "Sb"
         rest_of_word.each_gen do |g|
           unless first_gen =~ g then
             wa[1] = '|'+g.to_char.downcase+'|'
@@ -90,7 +90,6 @@ class GrouplikeExp
 
   private
   def log2_calc(gen)
-    binding.pry if @lb1.coeff == (3/2r)
     return case gen.to_char
            when 'a','B' then @lb1.dup
            when 'b','A' then @lb1*(-1)

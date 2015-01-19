@@ -1,7 +1,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2014-10-26 17:02:01 (ryosuke)>
+# Time-stamp: <2015-01-18 10:31:01 (kaigishitsu)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 require('sinatra/base')
@@ -9,14 +9,13 @@ require('haml')
 
 require('FoxCalc')
 require('StdMagnusExp')
-require('GrouplikeExp')
+require('SymplecticExp')
 
 #---------------------------
 class MyApp < Sinatra::Base
 
   Calculators = [ {name: "FoxCalc", path: "/FoxCalc", title: "Fox Calculas"},
                   {name: "Standard", path: "/Standard", title: "Standard Magnus Expansion"},
-                  {name: "Grouplike", path: "/Grouplike", title: "Group-like Expansion"},
                   {name: "Symplectic", path: "/Symplectic", title: "Symplectic Expansion"}]
 
   
@@ -28,13 +27,13 @@ class MyApp < Sinatra::Base
   #---
   get('/FoxCalc/?:word?/?:gen?'){ erb :foxcalc }
   get('/Standard/?:word?'){ erb :standard }
-  get('/Grouplike/?:word?'){ erb :grouplike }
+  get('/Symplectic/?:word?'){ erb :symplectic }
   #-----------------
 
   #--- POST --------
   post('/Standard'){ erb :standard }
   post('/FoxCalc'){ erb :foxcalc }
-  post('/Grouplike'){ erb :grouplike }
+  post('/Symplectic'){ erb :symplectic }
   #-----------------
 
   #--- NOT FOUND ---
@@ -60,7 +59,7 @@ class MyApp < Sinatra::Base
   end
   def calc_log2_simplify(w)
     unless (w.nil? || w.empty?) then
-      theta = GrouplikeExp.instance
+      theta = SymplecticExp.instance
       lb_arr_smp = theta.log2_simplify(Word.new(w))
       result = if lb_arr_smp.empty? then
                  "0"

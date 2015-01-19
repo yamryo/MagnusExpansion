@@ -1,16 +1,15 @@
 #
-# GrouplikeExp_spec.rb
+# SympMagnusExp_spec.rb
 #
-# Time-stamp: <2014-11-04 20:41:08 (kaigishitsu)>
+# Time-stamp: <2015-01-18 10:23:31 (kaigishitsu)>
 #
 require('spec_helper')
 
-require('GrouplikeExp')
-#require('LieBracket')
-#require('FormalSum')
+require('SymplecticExp')
 
-describe "GrouplikeExp" do
-  Theta_gl = GrouplikeExp.instance
+
+describe "SymplecticExp" do
+Theta_symp = SymplecticExp.instance
 
   #---------------------------------
   describe "#log2" do
@@ -23,45 +22,44 @@ describe "GrouplikeExp" do
       end
       it "is a single LieBracket" do
         genarr = [@gen_a, @gen_b, @gen_s, @gen_t, @gen_x, @gen_y]
-        expect( genarr.map{|g| Theta_gl.log2(g)} ).to all(be_kind_of LieBracket)
+        expect( genarr.map{|g| Theta_symp.log2(g)} ).to all(be_kind_of LieBracket)
       end
     #
       it "is 1/2[|x|,|y|] for x" do
-        expect( Theta_gl.log2(@gen_a).to_s).to eq '1/2[|a|,|b|]'
-        expect( Theta_gl.log2(@gen_s).to_s).to eq '1/2[|s|,|t|]'
-        expect( Theta_gl.log2(@gen_x).to_s).to eq '1/2[|x|,|y|]'
+        expect( Theta_symp.log2(@gen_a).to_s).to eq '1/2[|a|,|b|]'
+        expect( Theta_symp.log2(@gen_s).to_s).to eq '1/2[|s|,|t|]'
+        expect( Theta_symp.log2(@gen_x).to_s).to eq '1/2[|x|,|y|]'
       end
       #
       it "is -1/2[|x|,|y|] for y" do
-        expect( Theta_gl.log2(@gen_b).to_s).to eq '-1/2[|a|,|b|]'
-        expect( Theta_gl.log2(@gen_t).to_s).to eq '-1/2[|s|,|t|]'
-        expect( Theta_gl.log2(@gen_y).to_s).to eq '-1/2[|x|,|y|]'
+        expect( Theta_symp.log2(@gen_b).to_s).to eq '-1/2[|a|,|b|]'
+        expect( Theta_symp.log2(@gen_t).to_s).to eq '-1/2[|s|,|t|]'
+        expect( Theta_symp.log2(@gen_y).to_s).to eq '-1/2[|x|,|y|]'
       end
       #
       it "is -1/2[|x|,|y|] for X" do
-        expect( Theta_gl.log2(@gen_a.invert!).to_s).to eq '-1/2[|a|,|b|]'
-        expect( Theta_gl.log2(@gen_s.invert!).to_s).to eq '-1/2[|s|,|t|]'
-        expect( Theta_gl.log2(@gen_x.invert!).to_s).to eq '-1/2[|x|,|y|]'
+        expect( Theta_symp.log2(@gen_a.invert!).to_s).to eq '-1/2[|a|,|b|]'
+        expect( Theta_symp.log2(@gen_s.invert!).to_s).to eq '-1/2[|s|,|t|]'
+        expect( Theta_symp.log2(@gen_x.invert!).to_s).to eq '-1/2[|x|,|y|]'
       end
       #
       it "is 1/2[|x|,|y|] for Y" do
-        expect( Theta_gl.log2(@gen_b.invert!).to_s).to eq '1/2[|a|,|b|]'
-        expect( Theta_gl.log2(@gen_t.invert!).to_s).to eq '1/2[|s|,|t|]'
-        expect( Theta_gl.log2(@gen_y.invert!).to_s).to eq '1/2[|x|,|y|]'
+        expect( Theta_symp.log2(@gen_b.invert!).to_s).to eq '1/2[|a|,|b|]'
+        expect( Theta_symp.log2(@gen_t.invert!).to_s).to eq '1/2[|s|,|t|]'
+        expect( Theta_symp.log2(@gen_y.invert!).to_s).to eq '1/2[|x|,|y|]'
       end
       #
     end
     #----------------------------------------------------
     context "of other generators" do
       it "are FormalSum::Zero" do
-        expect(Theta_gl.log2(@gen_1)).to eq FormalSum::Zero
-        expect(Theta_gl.log2(Generator.new('g'))).to eq FormalSum::Zero
+        expect(Theta_symp.log2(@gen_1)).to eq FormalSum::Zero
+        expect(Theta_symp.log2(Generator.new('g'))).to eq FormalSum::Zero
       end
     end
     #----------------------------------------------------
     context "of a word" do
-      subject{ Theta_gl.log2(Word.new('aBxt')) }
-      it {is_expected.to be_kind_of Array and all(be_kind_of LieBracket)}
+      it {expect(Theta_symp.log2(Word.new('aBxt'))).to be_kind_of Array and all(be_kind_of LieBracket)}
       #---
       it "works properly" do
         deta =[
@@ -101,14 +99,17 @@ describe "GrouplikeExp" do
                  smp: "[|s|,|t|]"},
                { word: 'tSb',
                  img: "-1/2[|s|,|t|]-1/2[|t|,|s|]+1/2[|t|,|b|]-1/2[|s|,|t|]-1/2[|s|,|b|]-1/2[|a|,|b|]",
-                 smp: "-1/2[|a|,|b|]+1/2[|b|,|s|]-1/2[|b|,|t|]-1/2[|s|,|t|]"}
+                 smp: "-1/2[|a|,|b|]+1/2[|b|,|s|]-1/2[|b|,|t|]-1/2[|s|,|t|]"},
+               { word: 'AaA',
+                 img: "-1/2[|a|,|b|]+1/2[|a|,|b|]-1/2[|a|,|b|]",
+                 smp: "-1/2[|a|,|b|]"}
               ]
         deta.each do |h|
-          lb_arr = Theta_gl.log2(Word.new(h[:word]))
+          lb_arr = Theta_symp.log2(Word.new(h[:word]))
           str = lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
           expect(str).to eq h[:img]
           #---
-          lb_as = Theta_gl.log2_simplify(Word.new(h[:word]))
+          lb_as = Theta_symp.log2_simplify(Word.new(h[:word]))
           str = lb_as.empty? ? "0" : lb_as.map{|lb| lb.to_s }.join('+').gsub('+-','-')
           expect(str).to eq h[:smp]
         end
