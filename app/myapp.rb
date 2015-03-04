@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2015-03-04 12:30:48 (kaigishitsu)>
+# Time-stamp: <2015-03-05 01:04:43 (kaigishitsu)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
@@ -22,14 +22,16 @@ class MyApp < Sinatra::Base
   Calculators = [ {name: "FoxCalc", path: "/FoxCalc", title: "Fox Calculas"},
                   {name: "Standard", path: "/Standard", title: "Standard Magnus Expansion"},
                   {name: "Symplectic", path: "/Symplectic", title: "Symplectic Expansion"}]
-
+  
+  #set :haml, :escape_html => true 
+  
   #--- ROOT ---------
-  get('/'){ erb :index }
+  get('/'){ haml :index } #erb :index }
   #------------------
   
   #--- FoxCalc ------
-  get('/FoxCalc/?:word?/?:gen?'){ erb :foxcalc }
-  post('/FoxCalc'){ erb :foxcalc }
+  get('/FoxCalc/?:word?/?:gen?'){ haml :foxcalc } #erb :foxcalc }
+  post('/FoxCalc'){ haml :foxcalc } #erb :foxcalc }
   #------------------
   
   #--- Standard -----
@@ -37,7 +39,8 @@ class MyApp < Sinatra::Base
   #post('/Standard'){ erb :standard }
   get('/Standard/?:word?') do
     @myword = params[:word]
-    erb :standard
+    #erb :standard
+    haml :standard
   end
   post('/Standard'){ redirect '/Standard/' + params[:word] }
   #------------------
@@ -46,7 +49,8 @@ class MyApp < Sinatra::Base
   get('/Symplectic/?:word?') do
     @alert = (params[:word] == 'alert')
     @items = Item.all(:order => :created.desc)
-    erb :symplectic
+    #erb :symplectic
+    haml :symplectic
   end
   get('/Symplectic/delete/:id') do
     item = Item.first(:id => params[:id])
@@ -102,7 +106,6 @@ class MyApp < Sinatra::Base
                  else
                    lb_arr_smp.map{|lb| lb.to_s }.join('+').gsub('+-','-')
                  end
-        #"#{w}  -->  #{result}"
       end
     end
   end
