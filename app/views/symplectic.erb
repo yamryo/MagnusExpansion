@@ -2,25 +2,57 @@
 <!--  INPUT FORM ---------------------------------------------  -->
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Input a word:</h3>
+  <h3 class="panel-title">
+  Input a word:
+  </h3>
   </div>
   
   <div class="panel-body">
       <form class="form-inline" action="/Symplectic" method="post">
         <div class="col-xs-4"><div class="input-group">
-          <input type="text" name="word" class="form-control">
+          <input type="text" name="word" class="form-control" autocomplete="off">
         </div></div>
 	
 	<div class="input-group">
 	  <button type="submit" class="btn btn-default">Submit</button>
-	</div>
+	</div> 
       </form>
   </div>
 </div>
 <!--  --------------------------------------------------------  -->
 
-<!--  OUTPUT -------------------------------------------------  -->
+  <% if @alert %>
+  <div class="alert alert-warning" role="alert">
+   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+  You can enter the letters 'abstxy' and their capitals only.
+  </div>
+  <% end %>
+
+<% if false %>
+<!--  OUTPUT -------------------------------------------------- -->
 <div class="bs-docs-example" data-content="OUTPUT">
-     <%= calc_log2_simplify params['word'] %>
+     <%= output = calc_log2_simplify params['word'] %>
+</div>
+<!--  --------------------------------------------------------  -->
+<% end %>
+
+<!--  HISTORY ------------------------------------------------  -->
+<div class="bs-docs-example" data-content="HISTORY">
+     <table class="table table-striped">
+     <tr>
+       <th> id </th><th> word </th><th> Lie brackets </th><th></th>
+     </tr>
+     <% @items.each do |item| %>
+     <tr>
+       <td > <%= item[:id] %> </td>
+       <td > <span class="word"> <%= item[:word] %> </span> </td>
+       <td > <span class="result"> <%= item[:result] %> </span> </td>
+       <td > <span class="pull-right">
+            <a href="/Symplectic/delete/<%= item[:id] %>" class="btn btn-warning">
+	    Delete</a>
+       </span> </td>
+     </tr>
+     <% end %>
+</table>
 </div>
 <!--  --------------------------------------------------------  -->

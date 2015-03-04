@@ -1,16 +1,21 @@
 source 'https://rubygems.org'
 
+group :application do
+  gem 'sinatra'
+  gem 'haml'
+  gem 'dm-sqlite-adapter'
+  gem 'data_mapper'
+end
+
 group :development do
   gem 'pry'
   gem 'pry-byebug'
-  gem 'sinatra'
   gem 'shotgun'
   gem 'thin'
   gem 'guard'
   gem 'guard-livereload'
   gem 'rack-livereload'
   gem 'foreman'
-  gem 'haml'
 end
 
 group :test do
