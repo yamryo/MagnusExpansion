@@ -7,9 +7,9 @@
   glyph_option = { :class => "glyphicon glyphicon-exclamation-sign",
                    :aria => { :hidden => "true" } }
   headings = ["id", "word", "result", "created"]
-  
+
 -# title ------------------------------
-%blockquote Symplectic Expansion
+%blockquote The degree 2 part of log of Symplectic Expansion
 
 -# Input form -------------------------
 .panel.panel-default
@@ -25,7 +25,7 @@
 - if @alert
   .alert.alert-warning{ :role => "alert" }
     %span{ glyph_option }
-    You can enter the letters 'abstxy' and their capitals only.
+    You can input the letters 'abstxy' and their capitals only.
 
 -# History ----------------------------
 .bs-docs-example{ :data => { :content => "HISTORY" } }
@@ -47,5 +47,5 @@
           %span{ :class => "pull-right" }
             %a{ :href => "/Symplectic/delete/#{item[:id]}", :class => "btn btn-warning" }
               Delete
-              
--# End of file -------------------------    
+
+-# End of file -------------------------

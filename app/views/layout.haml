@@ -5,7 +5,6 @@
     cssList = ["bootstrap.min.css",
                "sticky-footer-navbar.css",
                "bs-docs-example.css"]
-    pageList = ["FoxCalc", "Standard", "Symplectic"]
 
   -# header ----------------------------
   %head
@@ -14,18 +13,18 @@
       - cssList.each do |css_file|
         %link{ :href => "/css/#{css_file}", :type => "text/css", :rel => "stylesheet" }
 
-  -# body ------------------------------ 
+  -# body ------------------------------
   %body
     %nav{ :class => "navbar navbar-default navbar-fixed-top", :role => "navigation" }
       .container
         .navbar-header
-          %a{ :class => "navbar-brand", :href => "/" } 
+          %a{ :class => "navbar-brand", :href => "/" }
             %strong Magnus Expansion Calculator
         #navbar{ :class => "collapse navbar-collapse" }
           %ul{ :class => "nav navbar-nav" }
-            - pageList.each do |name|
-              %li 
-                %a{ :href => "/#{name}" }= name 
+            - @calc_list.each do |name|
+              %li
+                %a{ :href => "/#{name}" }= name
 
     -# yield ----------------------------
     .container= yield
@@ -38,5 +37,5 @@
   -# scripts --------------------------
   %script{ :src => "http://code.jquery.com/jquery-1.10.1.min.js" }
   %script{ :src => "/js/bootstrap.js" }
-             
+
 -# End of file -------------------------

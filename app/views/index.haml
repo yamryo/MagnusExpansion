@@ -1,16 +1,15 @@
 -# variables --------------------
 :ruby
-  calcList = %w[FoxCalc Standard Symplectic]
 
 -# title ------------------------
 %blockquote Top page
 
--# list ------------------------- 
+-# list -------------------------
 %h4 Choose a calculator
 
 %ul{ :class => "list-group" }
-  - calcList.each do |name|
-    %li{ :class => "list-group-item" } 
+  - @calc_list.each do |name|
+    %li{ :class => "list-group-item" }
       %a{ :href => "/#{name}" }= name
-             
+
 -# End of file -------------------------

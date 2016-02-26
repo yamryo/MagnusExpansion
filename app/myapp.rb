@@ -2,8 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2015-03-05 01:04:43 (kaigishitsu)>
-#
+# Time-stamp: <2016-02-26 09:02:33 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -16,35 +15,54 @@ require('FoxCalc')
 require('StdMagnusExp')
 require('SymplecticExp')
 
-#---------------------------
+#------------------------------------------------------
 class MyApp < Sinatra::Base
 
-  Calculators = [ {name: "FoxCalc", path: "/FoxCalc", title: "Fox Calculas"},
+  Calculators = [ #{name: "FoxCalc", path: "/FoxCalc", title: "Fox Calculas"},
                   {name: "Standard", path: "/Standard", title: "Standard Magnus Expansion"},
                   {name: "Symplectic", path: "/Symplectic", title: "Symplectic Expansion"}]
-  
-  #set :haml, :escape_html => true 
-  
+
+  #set :haml, :escape_html => true
+
+  #------------------
+  before do
+    @calc_list = Calculators.map{|x| x[:name]}
+  end
+  #------------------
+
   #--- ROOT ---------
-  get('/'){ haml :index } #erb :index }
+  get('/') do
+    haml :index #erb :index
+  end
   #------------------
-  
-  #--- FoxCalc ------
-  get('/FoxCalc/?:word?/?:gen?'){ haml :foxcalc } #erb :foxcalc }
-  post('/FoxCalc'){ haml :foxcalc } #erb :foxcalc }
-  #------------------
-  
+
+#  #--- FoxCalc ------
+#  get('/FoxCalc/?:word?/?:gen?'){ haml :foxcalc } #erb :foxcalc }
+#  post('/FoxCalc'){ haml :foxcalc } #erb :foxcalc }
+#  #------------------
+
   #--- Standard -----
-  #get('/Standard/?:word?'){ erb :standard }
-  #post('/Standard'){ erb :standard }
-  get('/Standard/?:word?') do
+  get('/Standard/?:word?/?:gen?') do
     @myword = params[:word]
-    #erb :standard
+    @mygen = params[:gen]
     haml :standard
   end
-  post('/Standard'){ redirect '/Standard/' + params[:word] }
+  post('/Standard') do
+    redirect '/Standard/' + params[:word] + '/' + params[:gen]
+  end
   #------------------
-  
+
+#  #--- Standard -----
+#  #get('/Standard/?:word?'){ erb :standard }
+#  #post('/Standard'){ erb :standard }
+#  get('/Standard/?:word?') do
+#    @myword = params[:word]
+#    #erb :standard
+#    haml :standard
+#  end
+#  post('/Standard'){ redirect '/Standard/' + params[:word] }
+#  #------------------
+
   #--- Symplectic ---
   get('/Symplectic/?:word?') do
     @alert = (params[:word] == 'alert')
@@ -63,7 +81,7 @@ class MyApp < Sinatra::Base
       alert = '/alert'
     else
       alert = ''
-      mylb = calc_log2_simplify(params[:word]) 
+      mylb = calc_log2_simplify(params[:word])
       Item.create(:word => params[:word], :result => mylb, :created => Time.now)
     end
     redirect '/Symplectic' + alert
@@ -74,11 +92,11 @@ class MyApp < Sinatra::Base
   get('/more/*'){ params[:splat] }
   get('/haml/:name'){ haml :hamltest }
   #------------------
-  
+
   #--- NOT FOUND ---
   not_found{ halt 404, '404: page not found' }
   #-----------------
-  
+
   #--- Helpers -----
   helpers do
     def active_page?(path='')
@@ -125,7 +143,8 @@ class MyApp < Sinatra::Base
   #---------------------------
 
 end
-#---------------------------
+#------------------------------------------------------
+
 #---------------------------
 # End of File
 #---------------------------
