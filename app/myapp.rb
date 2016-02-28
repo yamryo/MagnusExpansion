@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-02-26 09:02:33 (ryosuke)>
+# Time-stamp: <2016-02-28 09:35:44 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -33,6 +33,7 @@ class MyApp < Sinatra::Base
   #--- ROOT ---------
   get('/') do
     haml :index #erb :index
+    #haml '%h1= msg', :locals => {:msg => 'Under Constraction' }
   end
   #------------------
 
@@ -48,43 +49,50 @@ class MyApp < Sinatra::Base
     haml :standard
   end
   post('/Standard') do
-    redirect '/Standard/' + params[:word] + '/' + params[:gen]
+    w = params[:word]
+    g = ''
+    if (params.has_key?("gen")) then
+      g = '/' + params[:gen] unless params[:gen].empty?
+    end
+    redirect '/Standard/' + w + g
+    #haml "%p= 'params[:gen]= ' + params[:gen].inspect"
   end
   #------------------
 
-#  #--- Standard -----
-#  #get('/Standard/?:word?'){ erb :standard }
-#  #post('/Standard'){ erb :standard }
-#  get('/Standard/?:word?') do
-#    @myword = params[:word]
-#    #erb :standard
-#    haml :standard
-#  end
-#  post('/Standard'){ redirect '/Standard/' + params[:word] }
-#  #------------------
-
-  #--- Symplectic ---
-  get('/Symplectic/?:word?') do
-    @alert = (params[:word] == 'alert')
-    @items = Item.all(:order => :created.desc)
-    #erb :symplectic
+  #--- Symplectic ---------
+  get('/Symplectic') do
     haml :symplectic
   end
-  get('/Symplectic/delete/:id') do
+
+  ### log2
+  get('/Symplectic/log2/?:word?') do
+    @alert = (params[:word] == 'alert')
+    @items = Item.all(:order => :created.desc)
+    haml :symplectic_log2
+  end
+  get('/Symplectic/log2/delete/:id') do
     item = Item.first(:id => params[:id])
     item.destroy
-    redirect '/Symplectic'
+    redirect '/Symplectic/log2'
   end
-  #---
-  post('/Symplectic') do
+
+  post('/Symplectic/log2') do
     if /[^aAbBsStTxXyY]/ =~ params[:word]
       alert = '/alert'
     else
       alert = ''
-      mylb = calc_log2_simplify(params[:word])
+      mylb = calc_symp_log2(params[:word]).map{|lb| lb.to_s }.join('+').gsub('+-','-')
       Item.create(:word => params[:word], :result => mylb, :created => Time.now)
     end
-    redirect '/Symplectic' + alert
+    redirect '/Symplectic/log2' + alert
+  end
+
+  ### ellab
+  get('/Symplectic/ellab/?:wa?/?:wb?') do
+    haml :symplectic_ellab
+  end
+  post('/Symplectic/ellab') do
+    redirect '/Symplectic/ellab/' + params[:wa] + '/' + params[:wb]
   end
   #-----------------
 
@@ -102,6 +110,7 @@ class MyApp < Sinatra::Base
     def active_page?(path='')
       request.path_info.include?(path)
     end
+    #--- calculators
     def calc_fc(w, g)
       unless (w.nil? || w.empty?) then
         gg = (g.nil?) ? Generator.new('a') : Generator.new(g)
@@ -115,16 +124,36 @@ class MyApp < Sinatra::Base
         "#{w}  -->  #{theta.expand(Word.new(w)).to_s}"
       end
     end
-    def calc_log2_simplify(w)
+    def calc_symp_log2(w)
       unless (w.nil? || w.empty?) then
         theta = SymplecticExp.instance
-        lb_arr_smp = theta.log2_simplify(Word.new(w))
-        result = if lb_arr_smp.empty? then
-                   "0"
-                 else
-                   lb_arr_smp.map{|lb| lb.to_s }.join('+').gsub('+-','-')
-                 end
+        theta.log2_simplify(Word.new(w))
+      else
+        [LieBracket.new("0")]
       end
+    end
+    # def calc_symp_log2_join(w)
+    #   lb_arr = calc_symp_log2(w)
+    #   lb_arr.empty? ? "0" : lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
+    # end
+    def calc_ellab(wa,wb)
+      unless (wa.nil? || wa.empty? || wb.nil? || wb.empty?) then
+        lb_arr = calc_symp_log2(wa)
+        lb_str = lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
+        #---
+        #vec_arr = Word.new(wb).each_gen
+        #vec_str = vec_arr.each do |g|
+        #( (g.inverse? ? '-' : '') + g.letter ).sub(/\w+/, '|\&|')
+        #end
+        #---
+        lhe = 'l()'.insert(2, wa) + '||'.insert(1, wb)
+        mhe = 'l()'
+        #mhe = lb_str.sub(/.+/, '(\&)') + vec_str..sub(/.+/, '(\&)')
+        #rhe = vec_arr.each do |v|
+        #
+        #end
+      end
+      return [lhe, mhe].join(' = ')
     end
   end
   #-----------------
