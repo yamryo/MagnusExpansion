@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-02-28 15:35:55 (ryosuke)>
+# Time-stamp: <2016-02-28 22:43:59 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -24,25 +24,21 @@ class MyApp < Sinatra::Base
 
   #set :haml, :escape_html => true
 
-  #------------------
+  #---[ Filter ]------------------------------------
   before do
     @calc_list = Calculators.map{|x| x[:name]}
   end
-  #------------------
+  #-------------------------------------------------
 
-  #--- ROOT ---------
+  #---[ Routing ]-----------------------------------
+  ### ROOT ###
   get('/') do
     haml :index #erb :index
     #haml '%h1= msg', :locals => {:msg => 'Under Constraction' }
   end
-  #------------------
 
-#  #--- FoxCalc ------
-#  get('/FoxCalc/?:word?/?:gen?'){ haml :foxcalc } #erb :foxcalc }
-#  post('/FoxCalc'){ haml :foxcalc } #erb :foxcalc }
-#  #------------------
-
-  #--- Standard -----
+  ##################
+  ### Standard
   get('/Standard/?:word?/?:gen?') do
     #@myword = params[:word]
     #@mygen = params[:gen]
@@ -59,14 +55,15 @@ class MyApp < Sinatra::Base
     redirect '/Standard/' + w + g
     #haml "%p= 'params[:gen]= ' + params[:gen].inspect"
   end
-  #------------------
 
-  #--- Symplectic ---------
+  ##################
+  ### Symplectic
+  #--- TOP
   get('/Symplectic') do
     haml :symplectic
   end
 
-  ### log2
+  #--- log2
   get('/Symplectic/log2/?:word?') do
     @alert = (params[:word] == 'alert')
     @empty = (params[:word] == 'empty')
@@ -90,9 +87,10 @@ class MyApp < Sinatra::Base
     redirect '/Symplectic/log2' + str
   end
 
-  ### ellab
+  #--- ellab
   get('/Symplectic/ellab/?:wa?/?:wb?') do
-    @output = (params[:wa] == 'alert') ? 'alert' : calc_ellab(params[:wa], params[:wb])
+    lhe = 'ell' + '()'.insert(1, params[:wa]) + '||'.insert(1, params[:wb])
+    @output = lhe + (params[:wa] == 'alert') ? 'alert' : calc_ellab(params[:wa], params[:wb])
     haml :symplectic_ellab
   end
   post('/Symplectic/ellab') do
@@ -105,20 +103,25 @@ class MyApp < Sinatra::Base
               '/' + params[:wa] + '/' + params[:wb]
             end
           end
-      redirect '/Symplectic/ellab' + str
+    redirect '/Symplectic/ellab' + str
   end
-  #-----------------
 
-  #--- OTHERS ---------
+#  ##################
+#  ### FoxCalc
+#  get('/FoxCalc/?:word?/?:gen?'){ haml :foxcalc } #erb :foxcalc }
+#  post('/FoxCalc'){ haml :foxcalc } #erb :foxcalc }
+
+  ##################
+  ### OTHERS
   get('/more/*'){ params[:splat] }
   get('/haml/:name'){ haml :hamltest }
-  #------------------
 
-  #--- NOT FOUND ---
+  ##################
+  ### NOT FOUND
   not_found{ halt 404, '404: page not found' }
-  #-----------------
+  #-------------------------------------------------
 
-  #--- Helpers -----
+  #---[ Helpers ]-----------------------------------
   helpers do
     def active_page?(path='')
       request.path_info.include?(path)
@@ -146,30 +149,28 @@ class MyApp < Sinatra::Base
       end
     end
     def calc_ellab(wa,wb)
-      fname = 'ell'
-      lhe, mhe = 'emp', 'ty'
+      eq1, eq2 = 'emp', 'ty'
       unless ( (wa.nil? || wa.empty?) || (wb.nil? || wb.empty?) ) then
         lb_arr = calc_symp_log2(wa)
-        lb_str = () ? lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
+        lb_str = lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
         #---
         #vec_arr = Word.new(wb).each_gen
         #vec_str = vec_arr.each do |g|
         #( (g.inverse? ? '-' : '') + g.letter ).sub(/\w+/, '|\&|')
         #end
         #---
-        lhe = fname + '()'.insert(1, wa) + '||'.insert(1, wb)
-        mhe = '()'.insert(1, lb_str) + '||'.insert(1, wb)
+        eq1 = '()'.insert(1, lb_str) + '||'.insert(1, wb)
         #mhe = lb_str.sub(/.+/, '(\&)') + vec_str..sub(/.+/, '(\&)')
         #rhe = vec_arr.each do |v|
         #
         #end
       end
-      return [lhe, mhe].join(' = ')
+      return [eq1, eq2].join(' = ')
     end
   end
-  #-----------------
+  #-------------------------------------------------
 
-  #--- DataMapper -------------------
+  #---[ DataMapper ]--------------------------------
   DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/app/public/symplectic_history.db")
   class Item
     include DataMapper::Resource
@@ -180,7 +181,7 @@ class MyApp < Sinatra::Base
     property :created, DateTime
   end
   DataMapper.finalize.auto_upgrade!
-  #---------------------------
+  #-------------------------------------------------
 
 end
 #------------------------------------------------------

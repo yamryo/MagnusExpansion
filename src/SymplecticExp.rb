@@ -1,7 +1,7 @@
 #
 # SymplecticExp.rb
 #
-# Time-stamp: <2016-02-28 17:20:58 (ryosuke)>
+# Time-stamp: <2016-02-28 22:52:39 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -21,9 +21,7 @@ class SymplecticExp
     @symp_pairs = pairs_of_gens
     #---
     @base = []
-    @symp_pairs.each do |pair|
-      @base << LieBracket.new(pair[0], pair[1])*(1/2r)
-    end
+    @symp_pairs.each{ |pr| @base << LieBracket.new(pr[0], pr[1])*(1/2r) }
   end
   attr_accessor :mod_deg
 
@@ -71,6 +69,7 @@ class SymplecticExp
   #
   def log2_simplify(word)
     lb_arr = log2(word)
+    binding.pry
     lb_arr.map!{ |lb| (lb.couple[0] < lb.couple[1])? lb : lb.flip }
     lb_arr.sort!{|a, b| a.inspect_couple <=> b.inspect_couple }
     if lb_arr.kind_of?(LieBracket)
@@ -99,7 +98,7 @@ class SymplecticExp
     @symp_pairs.each do |pair|
       result = pair.index(gen.to_char) # 0 or 1 or nil
       if not result.nil?
-        binding.pry if gen.to_char == 'x'
+        #binding.pry if gen.to_char == 'x'
         result = LieBracket.new(pair[0], pair[1])*((1/2r) - result.to_i)
       end
     end
