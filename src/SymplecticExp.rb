@@ -1,7 +1,7 @@
 #
 # SymplecticExp.rb
 #
-# Time-stamp: <2015-01-18 10:38:12 (kaigishitsu)>
+# Time-stamp: <2016-02-28 17:20:58 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -13,12 +13,17 @@ require('singleton')
 #-----------------------------------------------
 class SymplecticExp
   include Expander, Singleton
-  
-  def initialize(m=3)
+
+  Default_symp_gens = [%w[a, b], %w[s t], %w[x y]]
+
+  def initialize(pairs_of_gens=Default_symp_gens, m=3)
     @mod_deg = m
-    @lb1 = LieBracket.new('|a|','|b|')*(1/2r)
-    @lb2 = LieBracket.new('|s|','|t|')*(1/2r)
-    @lb3 = LieBracket.new('|x|','|y|')*(1/2r)
+    @symp_pairs = pairs_of_gens
+    #---
+    @base = []
+    @symp_pairs.each do |pair|
+      @base << LieBracket.new(pair[0], pair[1])*(1/2r)
+    end
   end
   attr_accessor :mod_deg
 
@@ -37,7 +42,7 @@ class SymplecticExp
       return log2_calc(word)
     when Word, String then
       word = Word.new(word) unless word.kind_of?(Word)
-      if word.length == 1 
+      if word.length == 1
         lb_arr << log2_calc(Generator.new(word))
       else
         first_gen = word.gen_at(0) # the first letter
@@ -90,14 +95,23 @@ class SymplecticExp
 
   private
   def log2_calc(gen)
-    return case gen.to_char
-           when 'a','B' then @lb1.dup
-           when 'b','A' then @lb1*(-1)
-           when 's','T' then @lb2.dup
-           when 't','S' then @lb2*(-1)
-           when 'x','Y' then @lb3.dup
-           when 'y','X' then @lb3*(-1)
-           else Zero end
+    result = nil
+    @symp_pairs.each do |pair|
+      result = pair.index(gen.to_char) # 0 or 1 or nil
+      if not result.nil?
+        binding.pry if gen.to_char == 'x'
+        result = LieBracket.new(pair[0], pair[1])*((1/2r) - result.to_i)
+      end
+    end
+    return (result.nil?) ? LieBracket.new : result
+    # return case gen.to_char
+    #        when 'a','B' then @base[0].dup
+    #        when 'b','A' then @base[0]*(-1)
+    #        when 's','T' then @base[1].dup
+    #        when 't','S' then @base[1]*(-1)
+    #        when 'x','Y' then @base[2].dup
+    #        when 'y','X' then @base[2]*(-1)
+    #        else Zero end
   end
 end
 #-----------------------------------------------

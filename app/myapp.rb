@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-02-28 09:35:44 (ryosuke)>
+# Time-stamp: <2016-02-28 15:35:55 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -44,8 +44,10 @@ class MyApp < Sinatra::Base
 
   #--- Standard -----
   get('/Standard/?:word?/?:gen?') do
-    @myword = params[:word]
-    @mygen = params[:gen]
+    #@myword = params[:word]
+    #@mygen = params[:gen]
+    @output_st = calc_std params[:word] #@myword
+    @output_fx = calc_fc params[:word], params[:gen]
     haml :standard
   end
   post('/Standard') do
@@ -67,6 +69,7 @@ class MyApp < Sinatra::Base
   ### log2
   get('/Symplectic/log2/?:word?') do
     @alert = (params[:word] == 'alert')
+    @empty = (params[:word] == 'empty')
     @items = Item.all(:order => :created.desc)
     haml :symplectic_log2
   end
@@ -78,21 +81,31 @@ class MyApp < Sinatra::Base
 
   post('/Symplectic/log2') do
     if /[^aAbBsStTxXyY]/ =~ params[:word]
-      alert = '/alert'
+      str = '/alert'
     else
-      alert = ''
       mylb = calc_symp_log2(params[:word]).map{|lb| lb.to_s }.join('+').gsub('+-','-')
-      Item.create(:word => params[:word], :result => mylb, :created => Time.now)
+      item = Item.create(:word => params[:word], :result => mylb, :created => Time.now)
+      str = (item.saved?) ? '' : '/empty'
     end
-    redirect '/Symplectic/log2' + alert
+    redirect '/Symplectic/log2' + str
   end
 
   ### ellab
   get('/Symplectic/ellab/?:wa?/?:wb?') do
+    @output = (params[:wa] == 'alert') ? 'alert' : calc_ellab(params[:wa], params[:wb])
     haml :symplectic_ellab
   end
   post('/Symplectic/ellab') do
-    redirect '/Symplectic/ellab/' + params[:wa] + '/' + params[:wb]
+    str = if ( params[:wa].empty? || params[:wb].empty? ) then
+            ''
+          else
+            if /[^aAbBsStTxXyY]/ =~ params[:wa]+params[:wb] then
+              '/alert'
+            else
+              '/' + params[:wa] + '/' + params[:wb]
+            end
+          end
+      redirect '/Symplectic/ellab' + str
   end
   #-----------------
 
@@ -132,22 +145,20 @@ class MyApp < Sinatra::Base
         [LieBracket.new("0")]
       end
     end
-    # def calc_symp_log2_join(w)
-    #   lb_arr = calc_symp_log2(w)
-    #   lb_arr.empty? ? "0" : lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
-    # end
     def calc_ellab(wa,wb)
-      unless (wa.nil? || wa.empty? || wb.nil? || wb.empty?) then
+      fname = 'ell'
+      lhe, mhe = 'emp', 'ty'
+      unless ( (wa.nil? || wa.empty?) || (wb.nil? || wb.empty?) ) then
         lb_arr = calc_symp_log2(wa)
-        lb_str = lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
+        lb_str = () ? lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
         #---
         #vec_arr = Word.new(wb).each_gen
         #vec_str = vec_arr.each do |g|
         #( (g.inverse? ? '-' : '') + g.letter ).sub(/\w+/, '|\&|')
         #end
         #---
-        lhe = 'l()'.insert(2, wa) + '||'.insert(1, wb)
-        mhe = 'l()'
+        lhe = fname + '()'.insert(1, wa) + '||'.insert(1, wb)
+        mhe = '()'.insert(1, lb_str) + '||'.insert(1, wb)
         #mhe = lb_str.sub(/.+/, '(\&)') + vec_str..sub(/.+/, '(\&)')
         #rhe = vec_arr.each do |v|
         #

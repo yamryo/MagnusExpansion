@@ -1,7 +1,7 @@
 #
 # SympMagnusExp_spec.rb
 #
-# Time-stamp: <2015-01-18 10:23:31 (kaigishitsu)>
+# Time-stamp: <2016-02-28 16:28:39 (ryosuke)>
 #
 require('spec_helper')
 
@@ -9,10 +9,16 @@ require('SymplecticExp')
 
 
 describe "SymplecticExp" do
-Theta_symp = SymplecticExp.instance
-
+  #---------------------------------
+  # describe "#initialize" do
+  #   context "with specifying a symplectic generators" do
+  #     SymplecticExp([%w[a b], %w[s t] %w[x y]])
+  #   end
+  # end
+  #
   #---------------------------------
   describe "#log2" do
+    before(:all){ Theta_symp = SymplecticExp.instance }
     context "of a single generator" do
       before :all do
         @gen_1 = Generator.new('1')
@@ -118,7 +124,7 @@ Theta_symp = SymplecticExp.instance
     #
   end
   #---------------------------------
-  
+
 end
 # #---------------------------------
 # describe "" do

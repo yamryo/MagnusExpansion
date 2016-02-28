@@ -1,6 +1,6 @@
 -# ----------------------------------------------
 -#        app/view/symplectic_log2.haml
--# Time-stamp: <2016-02-27 18:06:09 (ryosuke)>
+-# Time-stamp: <2016-02-28 13:19:00 (ryosuke)>
 -# ----------------------------------------------
 -# variables --------------------------
 :ruby
@@ -23,13 +23,18 @@
     %form{ :class => "form-inline", :action => "/Symplectic/log2", :method => "post" }
       .form-group
         %input{ input_form_option }
-      %button{ :type => "submit", :class => "btn btn-default" } Submit
+        %button{ :type => "submit", :class => "btn btn-default" } Submit
 
 -# alert ------------------------------
 - if @alert
   .alert.alert-warning{ :role => "alert" }
     %span{ glyph_option }
     You can input the letters 'abstxy' and their capitals only.
+
+- if @empty
+  .alert.alert-info{ :role => "alert" }
+    %span{ glyph_option }
+    The word which you entered was equal to the empty word.
 
 -# History ----------------------------
 .bs-docs-example{ :data => { :content => "HISTORY" } }
