@@ -2,5 +2,6 @@
 /test/OLD
 /src/TODO
 /tmp
+/old
 Gemfile.lock
 .DS_Store

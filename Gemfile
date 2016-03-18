@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 group :application do
   gem 'sinatra'
   gem 'haml'
+  gem 'slim'
   gem 'dm-sqlite-adapter'
   gem 'data_mapper'
 end

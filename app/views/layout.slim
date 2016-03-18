@@ -1,0 +1,45 @@
+/ ----------------------------------------------
+/        app/view/layout.slim
+/ Time-stamp: <2016-03-18 16:54:49 (ryosuke)>
+/ ----------------------------------------------
+doctype html
+html lang="en"
+  / variables -------------------------
+  ruby:
+    cssList = ["bootstrap.min.css",
+               "sticky-footer-navbar.css",
+               "bs-docs-example.css"]
+
+  / header ----------------------------
+  head
+    meta charset="utf-8"
+      title Magnus Expansion Calculator
+      - cssList.each do |css_file|
+        link href="/css/#{css_file}" type="text/css" rel="stylesheet"
+
+  / body ------------------------------
+  body
+    nav.navbar.navbar-default.navbar-fixed-top role="navigation"
+      .container
+        .navbar-header
+          a.navbar-brand href="/"
+            strong Magnus Expansion Calculator
+        #navbar.collapse.navbar-collapse
+          ul.nav.navbar-nav
+            - @calc_list.each do |name|
+              li
+                a href="/#{name}" = name
+
+    / yield ----------------------------
+    .container == yield
+
+  / footer ---------------------------
+  footer.footer
+    .container
+      p.text-muted = Time.now
+
+  / scripts --------------------------
+  script src="http://code.jquery.com/jquery-1.10.1.min.js"
+  script src="/js/bootstrap.js"
+
+/ End of file ----------------------------------

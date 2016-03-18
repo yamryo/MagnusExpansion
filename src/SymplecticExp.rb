@@ -1,7 +1,7 @@
 #
 # SymplecticExp.rb
 #
-# Time-stamp: <2016-02-28 22:52:39 (ryosuke)>
+# Time-stamp: <2016-02-29 12:52:34 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -14,7 +14,7 @@ require('singleton')
 class SymplecticExp
   include Expander, Singleton
 
-  Default_symp_gens = [%w[a, b], %w[s t], %w[x y]]
+  Default_symp_gens = [%w[a b], %w[s t], %w[x y]]
 
   def initialize(pairs_of_gens=Default_symp_gens, m=3)
     @mod_deg = m
@@ -35,6 +35,7 @@ class SymplecticExp
 
   def log2(word)
     lb_arr = []
+    #binding.pry if word == Generator.new('1')
     case word
     when Generator then
       return log2_calc(word)
@@ -49,10 +50,10 @@ class SymplecticExp
         #---
         lb_arr << self.log2(first_gen)
         #---
-        wa = ['|'+first_gen.to_char.downcase+'|','0']
+        wa = [first_gen.letter,'0']
         word.each_gen do |g|
           unless first_gen =~ g then
-            wa[1] = '|'+g.to_char.downcase+'|'
+            wa[1] = g.letter
             cf = (1/2r)*((first_gen.inverse?) ? -1 : 1)*((g.inverse?) ? -1 : 1)
             lb_arr << LieBracket.new(wa[0], wa[1])*cf
           end
@@ -69,7 +70,7 @@ class SymplecticExp
   #
   def log2_simplify(word)
     lb_arr = log2(word)
-    binding.pry
+    #binding.pry
     lb_arr.map!{ |lb| (lb.couple[0] < lb.couple[1])? lb : lb.flip }
     lb_arr.sort!{|a, b| a.inspect_couple <=> b.inspect_couple }
     if lb_arr.kind_of?(LieBracket)
@@ -94,23 +95,16 @@ class SymplecticExp
 
   private
   def log2_calc(gen)
+    #binding.pry
     result = nil
     @symp_pairs.each do |pair|
-      result = pair.index(gen.to_char) # 0 or 1 or nil
-      if not result.nil?
-        #binding.pry if gen.to_char == 'x'
-        result = LieBracket.new(pair[0], pair[1])*((1/2r) - result.to_i)
+      num = pair.index(gen.letter) # 0 or 1 or nil
+      if not num.nil?
+        num = (num + 1).modulo(2) if gen.inverse?
+        result = LieBracket.new(pair[0], pair[1])*((1/2r) - num)
       end
     end
-    return (result.nil?) ? LieBracket.new : result
-    # return case gen.to_char
-    #        when 'a','B' then @base[0].dup
-    #        when 'b','A' then @base[0]*(-1)
-    #        when 's','T' then @base[1].dup
-    #        when 't','S' then @base[1]*(-1)
-    #        when 'x','Y' then @base[2].dup
-    #        when 'y','X' then @base[2]*(-1)
-    #        else Zero end
+    return (result.nil?) ? LieBracket::Zero : result
   end
 end
 #-----------------------------------------------

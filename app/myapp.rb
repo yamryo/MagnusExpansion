@@ -2,11 +2,11 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-02-28 22:43:59 (ryosuke)>
+# Time-stamp: <2016-03-18 17:40:16 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
-require('haml')
+require('slim')
 require('data_mapper')
 #require('sinatra/reloader')
 #require('date')
@@ -33,8 +33,8 @@ class MyApp < Sinatra::Base
   #---[ Routing ]-----------------------------------
   ### ROOT ###
   get('/') do
-    haml :index #erb :index
-    #haml '%h1= msg', :locals => {:msg => 'Under Constraction' }
+    slim :index
+    #slim 'h1= msg', locals: { msg: 'Under Constraction' }
   end
 
   ##################
@@ -44,7 +44,7 @@ class MyApp < Sinatra::Base
     #@mygen = params[:gen]
     @output_st = calc_std params[:word] #@myword
     @output_fx = calc_fc params[:word], params[:gen]
-    haml :standard
+    slim :standard
   end
   post('/Standard') do
     w = params[:word]
@@ -53,14 +53,14 @@ class MyApp < Sinatra::Base
       g = '/' + params[:gen] unless params[:gen].empty?
     end
     redirect '/Standard/' + w + g
-    #haml "%p= 'params[:gen]= ' + params[:gen].inspect"
+    #slim "p= 'params[:gen]= ' + params[:gen].inspect"
   end
 
   ##################
   ### Symplectic
   #--- TOP
   get('/Symplectic') do
-    haml :symplectic
+    slim :symplectic
   end
 
   #--- log2
@@ -68,7 +68,7 @@ class MyApp < Sinatra::Base
     @alert = (params[:word] == 'alert')
     @empty = (params[:word] == 'empty')
     @items = Item.all(:order => :created.desc)
-    haml :symplectic_log2
+    slim :symplectic_log2
   end
   get('/Symplectic/log2/delete/:id') do
     item = Item.first(:id => params[:id])
@@ -89,9 +89,11 @@ class MyApp < Sinatra::Base
 
   #--- ellab
   get('/Symplectic/ellab/?:wa?/?:wb?') do
-    lhe = 'ell' + '()'.insert(1, params[:wa]) + '||'.insert(1, params[:wb])
-    @output = lhe + (params[:wa] == 'alert') ? 'alert' : calc_ellab(params[:wa], params[:wb])
-    haml :symplectic_ellab
+    unless ( params[:wa].nil? || params[:wb].nil? ) then
+      lhe = 'ell' + '()'.insert(1, params[:wa]) + '||'.insert(1, params[:wb])
+      @output = lhe + ' = ' + ((params[:wa] == 'alert') ? 'alert' : calc_ellab(params[:wa], params[:wb]))
+    end
+    slim :symplectic_ellab
   end
   post('/Symplectic/ellab') do
     str = if ( params[:wa].empty? || params[:wb].empty? ) then
@@ -114,7 +116,7 @@ class MyApp < Sinatra::Base
   ##################
   ### OTHERS
   get('/more/*'){ params[:splat] }
-  get('/haml/:name'){ haml :hamltest }
+  #get('/haml/:name'){ haml :hamltest }
 
   ##################
   ### NOT FOUND
@@ -154,16 +156,23 @@ class MyApp < Sinatra::Base
         lb_arr = calc_symp_log2(wa)
         lb_str = lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
         #---
-        #vec_arr = Word.new(wb).each_gen
-        #vec_str = vec_arr.each do |g|
-        #( (g.inverse? ? '-' : '') + g.letter ).sub(/\w+/, '|\&|')
-        #end
+        vec_arr = []
+        Word.new(wb).each_gen{ |g| vec_arr << g }
+        vec_str = vec_arr.map{ |g| ((g.inverse? ? '-' : '') + g.letter).sub(/\w+/, '|\&|') }.join('+').gsub('+-','-')
         #---
-        eq1 = '()'.insert(1, lb_str) + '||'.insert(1, wb)
-        #mhe = lb_str.sub(/.+/, '(\&)') + vec_str..sub(/.+/, '(\&)')
-        #rhe = vec_arr.each do |v|
-        #
-        #end
+        eq1 = '()'.insert(1, lb_str) + vec_str.sub(/.+/, '(\&)')
+        # tmp_arr = []
+        # lb_arr.each do |lb|
+        #   tmp_arr << vec_arr.map do |v|
+        #     lb.to_s + v.to_char
+        #   end
+        # end
+        tmp_arr = lb_arr.each_with_object([]) do |lb, a|
+          a << vec_arr.map do |v|
+            lb.to_s + v.to_char
+          end
+        end
+        eq2 = tmp_arr.flatten!.join('+').gsub('+-','-')
       end
       return [eq1, eq2].join(' = ')
     end

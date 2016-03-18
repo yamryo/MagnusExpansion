@@ -1,0 +1,19 @@
+/----------------------------------------------
+/        app/view/index.slim
+/ Time-stamp: <2016-03-18 16:55:57 (ryosuke)>
+/----------------------------------------------
+/ variables --------------------
+ruby:
+
+/ title ------------------------
+blockquote Top page
+
+/ list -------------------------
+h4 Choose a calculator
+
+ul.list-group
+  - @calc_list.each do |name|
+    li.list-group-item
+      a href="/#{name}" = name
+
+/ End of file --------------------------------

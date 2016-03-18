@@ -1,0 +1,39 @@
+/ ----------------------------------------------
+/        app/view/symplectic_ellab.slim
+/ Time-stamp: <2016-03-18 18:27:50 (ryosuke)>
+/ ----------------------------------------------
+/ variables --------------------------
+ruby:
+  glyph_option = { :class => 'glyphicon glyphicon-exclamation-sign', :aria => {hidden: 'true' } }
+
+/ title ------------------------------
+blockquote
+  | Calculation of l(a)|b| with symplectic expansion
+
+/ Input form -------------------------
+.panel.panel-default
+  .panel-heading
+    h3.panel-title
+      | Input two words:
+  .panel-body
+    form.form-inline action="/Symplectic/ellab" method="post"
+      .form-group>
+        label> for="word1"
+          ' word 1:
+        input type="text" name="wa" class="form-control"
+      .form-group>
+        label> for="word2"
+          '  word 2:
+        input type="text" name="wb" class="form-control"
+      button type="submit" class="btn btn-default" Submit
+
+/ alert ------------------------------
+- if @params[:wa] == 'alert'
+  .alert.alert-warning role="alert"
+    span{ glyph_option }
+      |  You can input the letters 'abstxy' and their capitals only.
+
+/ Output ------------------------------
+.bs-docs-example data={ content: "OUTPUT" } = @output
+
+/ End of file -------------------------

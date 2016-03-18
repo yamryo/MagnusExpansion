@@ -1,0 +1,46 @@
+/ ----------------------------------------------
+/        app/view/standard.slim
+/ Time-stamp: <2016-03-18 18:31:36 (ryosuke)>
+/ ----------------------------------------------
+/ title -------------------------------
+blockquote Standard Magnus Expansion and Fox Caluclus
+
+/ Input form --------------------------
+.panel.panel-default
+  .panel-heading
+    h3.panel-title Input a word:
+  .panel-body
+    form.form-inline action="/Standard" method="post"
+      .form-group
+        input> type="text" name="word" class="form-control"
+        button type="submit" class="btn btn-default" Submit
+
+/ Output ------------------------------
+.bs-docs-example data={ content: "OUTPUT" } = @output_st
+
+- 3.times
+  br
+
+/ title ------------------------------
+blockquote Fox caluclus
+
+/ Input form -------------------------
+.panel.panel-default
+  .panel-heading
+    h3.panel-title Input a word and a generator:
+  .panel-body
+    form.form-inline action="/Standard" method="post"
+      .form-group>
+        label> for="word"
+          | word
+        input type="text" name="word" class="form-control"
+      .form-group>
+        label> for="generator"
+          |  /generator
+        input> type="text" name="gen" class="form-control"
+        button type="submit" class="btn btn-default" Submit
+
+/ Output ------------------------------
+.bs-docs-example data={ content: "OUTPUT" } = @output_fx
+
+/ End of file -------------------------

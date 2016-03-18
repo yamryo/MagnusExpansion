@@ -1,0 +1,20 @@
+/ ----------------------------------------------
+/        app/view/symplectic.haml
+/ Time-stamp: <2016-03-18 17:48:32 (ryosuke)>
+/ ----------------------------------------------
+/ variables --------------------
+ruby:
+  clist = %w[log2 ellab]
+/ title ------------------------
+blockquote
+| Symplectic Expansion
+
+/ list -------------------------
+h4 Choose a calculator
+
+ul.list-group
+  - clist.each do |name|
+    li.list-group-item
+      a href="/Symplectic/#{name}" = name
+
+/ End of file -------------------------
