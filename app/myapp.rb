@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-03-25 14:56:04 (ryosuke)>
+# Time-stamp: <2016-03-26 04:32:31 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -87,8 +87,16 @@ class MyApp < Sinatra::Base
   #--- ellab
   get('/Symplectic/ellab/?:wa?/?:wb?') do
     unless ( params[:wa].nil? || params[:wb].nil? ) then
-      lhe = 'ell' + '()'.insert(1, params[:wa]) + '||'.insert(1, params[:wb])
-      @output = lhe + ' = ' + ((params[:wa] == 'alert') ? 'alert' : calc_ellab(params[:wa], params[:wb]))
+      @output1, @output2 = '', ''
+      unless (params[:wa] == 'alert')
+        lab_str = 'ell' + "(#{params[:wa]})" + "|#{params[:wb]}|"
+        lba_str = 'ell' + "(#{params[:wb]})" + "|#{params[:wa]}|"
+        lab = calc_ellab(params[:wa], params[:wb])
+        lba = calc_ellab(params[:wb], params[:wa])
+        @output11 = lab_str + ' = ' + lab.join(' = ')
+        @output12 = lba_str + ' = ' + lba.join(' = ')
+        @output2 = lab_str + '+' + lba_str + ' = ' + lab[2] + '+' +  lba[2]
+      end
     end
     slim :symplectic_ellab
   end
@@ -146,7 +154,7 @@ class MyApp < Sinatra::Base
       end
     end
     def calc_ellab(wa,wb)
-      eq1, eq2, eq3, eq4 = 'emp', 'ty', '!', '?'
+      # eq1, eq2, eq3, eq4 = 'emp', 'ty', '!', '?'
       unless ( (wa.nil? || wa.empty?) || (wb.nil? || wb.empty?) ) then
         #---
         lb_arr = calc_symp_log2(wa)
@@ -156,33 +164,57 @@ class MyApp < Sinatra::Base
           couples << vec_arr.map{ |v| [lb, v]}
         end
         #---
-        lb_str_arr = lb_arr.map{|lb| lb.to_s }
-        vec_str_arr = vec_arr.map{ |g| ((g.inverse? ? '-' : '') + g.letter).sub(/\w+/, '|\&|') }
+        lb_str_arr = lb_arr.map{|lb| (lb*2).to_s }
+        vec_str_arr = vec_arr.map{ |g| (g.inverse? ? '-' : '') + "|#{g.letter}|" }
         pair_str_arr = lb_str_arr.each_with_object([]) do |lbs, pairs|
-          pairs << vec_str_arr.map{ |vs| lbs + vs.sub(/.+/, '(\&)') }
+          pairs << vec_str_arr.map{ |vs| lbs + "(#{vs})" }
         end
         #---
         #---
-        eq1 = ([lb_str_arr, vec_str_arr].map{ |sa| sa.join('+').gsub('+-','-').sub(/.+/, '(\&)') }).join
-        eq2 = pair_str_arr.flatten.join('+').gsub('+-','-')
-        eq3 = pair_arr.flatten(1).map do |c|
-          lb_f, lb_l = c[0].couple[0], c[0].couple[1]
-          v = ((c[1].inverse? ? '-' : '') + c[1].letter).sub(/\w+/, '|\&|')
-          ft = "(#{v}.|#{lb_f.to_s}|)|#{lb_l.to_s}|"
-          lt = "(#{v}.|#{lb_l.to_s}|)|#{lb_f.to_s}|"
-          "#{c[0].coeff}"+[ft, lt].join('-').gsub('--','+').sub(/.+/, '(\&)')
-        end.join('+').gsub('+-','-')
-        # eq4 = pair_arr.flatten(1).map do |c|
-        #   lb_f, lb_l = c[0].couple[0], c[0].couple[1]
-        #   case [c[1].letter, lb_f.to_s]
-        #   when
+        eq1 = '1/2' + [lb_str_arr, vec_str_arr].map do |sa|
+          sa.join('+').gsub('+-','-').sub(/.+/, '(\&)')
+        end.join
+        # eq2 = pair_str_arr.flatten.join('+').gsub('+-','-').sub(/.+/, '1/2{\&}')
+        # eq3 = pair_arr.flatten(1).map do |c|
+        #   lb = c[0]*2
+        #   lb_f, lb_l = lb.couple[0], lb.couple[1]
+        #   v = (c[1].inverse? ? '-' : '') + "|#{c[1].letter}|"
+        #   #---
         #   ft = "(#{v}.|#{lb_f.to_s}|)|#{lb_l.to_s}|"
         #   lt = "(#{v}.|#{lb_l.to_s}|)|#{lb_f.to_s}|"
-        #   "#{c[0].coeff}"+[ft, lt].join('-').gsub('--','+').sub(/.+/, '(\&)')
-        # end.join('+').gsub('+-','-')
+        #   ( "#{lb.coeff}" + (ft + '-' + lt).gsub('--','+').sub(/.+/, '{\&}') ).gsub('1', '')
+        # end.join('+').gsub('+-','-').sub(/.+/, '1/2[\&]')
+        # eq4 = pair_arr.flatten(1).map do |pair|
+        #   lb, v = pair[0]*2, pair[1]
+        #   trms = [lb.couple, lb.couple.reverse].map do |cpl|
+        #     int_num = intersection_form(v.letter, cpl[0].to_s) * (v.inverse? ? -1 : 1)
+        #     trm = int_num.to_s + ( (int_num == 0) ? '' : "|#{cpl[1].to_s}|" )
+        #     #trm = (trm + "|#{cpl[1].to_s}|").gsub('1', '') unless int_num == 0
+        #   end
+        #   ( "#{lb.coeff}" + trms.join('-').sub(/.+/, '{\&}') )
+        # end.join('+').gsub('+-','-').sub(/.+/, '1/2(\&)')
+        eq5 = pair_arr.flatten(1).map do |pair|
+          lb, v = pair[0]*2, pair[1]
+          trms = [lb.couple, lb.couple.reverse].map do |cpl|
+            int_num = intersection_form(v.letter, cpl[0].to_s) * (v.inverse? ? -1 : 1)
+            trm = (lb.coeff*int_num).to_s + ( (int_num == 0) ? '' : "|#{cpl[1].to_s}|" )
+          end.join('-').gsub('--','+').gsub('1', '')
+        end.join('+').gsub('+-','-').sub(/.+/, '1/2(\&)')
+        eq6 = eq5.gsub(/[+-]*0/,'').sub(/(\(\+)(.+)/, '(\2')
         #---
       end
-      return [eq1, eq3, eq4].join(' = ')
+      return [eq1, eq5, eq6]
+    end
+    def intersection_form(s1, s2)
+      #raise ArgumentError, 'At least one of the argument is not a string' unless (s1.is_a? String && s2.is_a? String)
+      s_pair = [s1, s2]
+      if SymplecticGens.include?(s_pair) then
+        1
+      elsif SymplecticGens.include?(s_pair.reverse) then
+        -1
+      else
+        0
+      end
     end
   end
   #-------------------------------------------------
