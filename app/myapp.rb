@@ -2,13 +2,12 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-03-18 17:40:16 (ryosuke)>
+# Time-stamp: <2016-03-25 14:56:04 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
 require('slim')
 require('data_mapper')
-#require('sinatra/reloader')
 #require('date')
 
 require('FoxCalc')
@@ -22,7 +21,7 @@ class MyApp < Sinatra::Base
                   {name: "Standard", path: "/Standard", title: "Standard Magnus Expansion"},
                   {name: "Symplectic", path: "/Symplectic", title: "Symplectic Expansion"}]
 
-  #set :haml, :escape_html => true
+  SymplecticGens = [%w[a b], %w[s t], %w[x y]]
 
   #---[ Filter ]------------------------------------
   before do
@@ -40,15 +39,13 @@ class MyApp < Sinatra::Base
   ##################
   ### Standard
   get('/Standard/?:word?/?:gen?') do
-    #@myword = params[:word]
-    #@mygen = params[:gen]
+    #@myword, @mygen = params[:word], params[:gen]
     @output_st = calc_std params[:word] #@myword
     @output_fx = calc_fc params[:word], params[:gen]
     slim :standard
   end
   post('/Standard') do
-    w = params[:word]
-    g = ''
+    w, g = params[:word], ''
     if (params.has_key?("gen")) then
       g = '/' + params[:gen] unless params[:gen].empty?
     end
@@ -66,25 +63,25 @@ class MyApp < Sinatra::Base
   #--- log2
   get('/Symplectic/log2/?:word?') do
     @alert = (params[:word] == 'alert')
-    @empty = (params[:word] == 'empty')
+    @empty = false
+    #---
+    unless (@alert || params[:word].nil?)
+      mylb = calc_symp_log2(params[:word]).map{|lb| lb.to_s }.join('+').gsub('+-','-')
+      item = Item.create(:word => params[:word], :result => mylb, :created => Time.now)
+      @empty = !(item.saved?)
+    end
     @items = Item.all(:order => :created.desc)
+    #---
     slim :symplectic_log2
   end
   get('/Symplectic/log2/delete/:id') do
-    item = Item.first(:id => params[:id])
-    item.destroy
+    (Item.first(:id => params[:id])).destroy
     redirect '/Symplectic/log2'
   end
 
   post('/Symplectic/log2') do
-    if /[^aAbBsStTxXyY]/ =~ params[:word]
-      str = '/alert'
-    else
-      mylb = calc_symp_log2(params[:word]).map{|lb| lb.to_s }.join('+').gsub('+-','-')
-      item = Item.create(:word => params[:word], :result => mylb, :created => Time.now)
-      str = (item.saved?) ? '' : '/empty'
-    end
-    redirect '/Symplectic/log2' + str
+    str = symplectic_check(params[:word]) ? params[:word] : 'alert'
+    redirect '/Symplectic/log2/' + str
   end
 
   #--- ellab
@@ -95,28 +92,21 @@ class MyApp < Sinatra::Base
     end
     slim :symplectic_ellab
   end
+
   post('/Symplectic/ellab') do
     str = if ( params[:wa].empty? || params[:wb].empty? ) then
             ''
+          elsif symplectic_check(params[:wa]+params[:wb]) then
+            '/' + params[:wa] + '/' + params[:wb]
           else
-            if /[^aAbBsStTxXyY]/ =~ params[:wa]+params[:wb] then
-              '/alert'
-            else
-              '/' + params[:wa] + '/' + params[:wb]
-            end
+            '/alert'
           end
     redirect '/Symplectic/ellab' + str
   end
 
-#  ##################
-#  ### FoxCalc
-#  get('/FoxCalc/?:word?/?:gen?'){ haml :foxcalc } #erb :foxcalc }
-#  post('/FoxCalc'){ haml :foxcalc } #erb :foxcalc }
-
   ##################
   ### OTHERS
   get('/more/*'){ params[:splat] }
-  #get('/haml/:name'){ haml :hamltest }
 
   ##################
   ### NOT FOUND
@@ -127,6 +117,11 @@ class MyApp < Sinatra::Base
   helpers do
     def active_page?(path='')
       request.path_info.include?(path)
+    end
+    def symplectic_check(w)
+      sympgens = SymplecticGens.flatten.join
+      re = Regexp.new( "[^#{sympgens + sympgens.upcase}]" )
+      (re =~ w).nil?
     end
     #--- calculators
     def calc_fc(w, g)
@@ -151,30 +146,43 @@ class MyApp < Sinatra::Base
       end
     end
     def calc_ellab(wa,wb)
-      eq1, eq2 = 'emp', 'ty'
+      eq1, eq2, eq3, eq4 = 'emp', 'ty', '!', '?'
       unless ( (wa.nil? || wa.empty?) || (wb.nil? || wb.empty?) ) then
-        lb_arr = calc_symp_log2(wa)
-        lb_str = lb_arr.map{|lb| lb.to_s }.join('+').gsub('+-','-')
         #---
+        lb_arr = calc_symp_log2(wa)
         vec_arr = []
         Word.new(wb).each_gen{ |g| vec_arr << g }
-        vec_str = vec_arr.map{ |g| ((g.inverse? ? '-' : '') + g.letter).sub(/\w+/, '|\&|') }.join('+').gsub('+-','-')
-        #---
-        eq1 = '()'.insert(1, lb_str) + vec_str.sub(/.+/, '(\&)')
-        # tmp_arr = []
-        # lb_arr.each do |lb|
-        #   tmp_arr << vec_arr.map do |v|
-        #     lb.to_s + v.to_char
-        #   end
-        # end
-        tmp_arr = lb_arr.each_with_object([]) do |lb, a|
-          a << vec_arr.map do |v|
-            lb.to_s + v.to_char
-          end
+        pair_arr = lb_arr.each_with_object([]) do |lb, couples|
+          couples << vec_arr.map{ |v| [lb, v]}
         end
-        eq2 = tmp_arr.flatten!.join('+').gsub('+-','-')
+        #---
+        lb_str_arr = lb_arr.map{|lb| lb.to_s }
+        vec_str_arr = vec_arr.map{ |g| ((g.inverse? ? '-' : '') + g.letter).sub(/\w+/, '|\&|') }
+        pair_str_arr = lb_str_arr.each_with_object([]) do |lbs, pairs|
+          pairs << vec_str_arr.map{ |vs| lbs + vs.sub(/.+/, '(\&)') }
+        end
+        #---
+        #---
+        eq1 = ([lb_str_arr, vec_str_arr].map{ |sa| sa.join('+').gsub('+-','-').sub(/.+/, '(\&)') }).join
+        eq2 = pair_str_arr.flatten.join('+').gsub('+-','-')
+        eq3 = pair_arr.flatten(1).map do |c|
+          lb_f, lb_l = c[0].couple[0], c[0].couple[1]
+          v = ((c[1].inverse? ? '-' : '') + c[1].letter).sub(/\w+/, '|\&|')
+          ft = "(#{v}.|#{lb_f.to_s}|)|#{lb_l.to_s}|"
+          lt = "(#{v}.|#{lb_l.to_s}|)|#{lb_f.to_s}|"
+          "#{c[0].coeff}"+[ft, lt].join('-').gsub('--','+').sub(/.+/, '(\&)')
+        end.join('+').gsub('+-','-')
+        # eq4 = pair_arr.flatten(1).map do |c|
+        #   lb_f, lb_l = c[0].couple[0], c[0].couple[1]
+        #   case [c[1].letter, lb_f.to_s]
+        #   when
+        #   ft = "(#{v}.|#{lb_f.to_s}|)|#{lb_l.to_s}|"
+        #   lt = "(#{v}.|#{lb_l.to_s}|)|#{lb_f.to_s}|"
+        #   "#{c[0].coeff}"+[ft, lt].join('-').gsub('--','+').sub(/.+/, '(\&)')
+        # end.join('+').gsub('+-','-')
+        #---
       end
-      return [eq1, eq2].join(' = ')
+      return [eq1, eq3, eq4].join(' = ')
     end
   end
   #-------------------------------------------------
