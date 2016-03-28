@@ -1,7 +1,7 @@
 #
 # SymplecticExp.rb
 #
-# Time-stamp: <2016-02-29 12:52:34 (ryosuke)>
+# Time-stamp: <2016-03-28 18:18:26 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -14,7 +14,7 @@ require('singleton')
 class SymplecticExp
   include Expander, Singleton
 
-  Default_symp_gens = [%w[a b], %w[s t], %w[x y]]
+  Default_symp_gens = [%w[A B], %w[S T], %w[X Y]]
 
   def initialize(pairs_of_gens=Default_symp_gens, m=3)
     @mod_deg = m
@@ -36,13 +36,13 @@ class SymplecticExp
   def log2(word)
     lb_arr = []
     #binding.pry if word == Generator.new('1')
-    case word
-    when Generator then
+    if word.is_a? Generator then
       return log2_calc(word)
-    when Word, String then
-      word = Word.new(word) unless word.kind_of?(Word)
+    else
+      raise ArgumentError, 'Wrong arguments' unless word.is_a?(Word) || word.is_a?(String)
+      word = Word.new(word) unless word.is_a?(Word)
       if word.length == 1
-        lb_arr << log2_calc(Generator.new(word))
+        lb_arr << self.log2(Generator.new(word))
       else
         first_gen = word.gen_at(0) # the first letter
         word.slice!(0,1) # the rest of the word
@@ -50,10 +50,10 @@ class SymplecticExp
         #---
         lb_arr << self.log2(first_gen)
         #---
-        wa = [first_gen.letter,'0']
+        wa = [first_gen.letter.upcase,'0']
         word.each_gen do |g|
           unless first_gen =~ g then
-            wa[1] = g.letter
+            wa[1] = g.letter.upcase
             cf = (1/2r)*((first_gen.inverse?) ? -1 : 1)*((g.inverse?) ? -1 : 1)
             lb_arr << LieBracket.new(wa[0], wa[1])*cf
           end
@@ -63,8 +63,6 @@ class SymplecticExp
       end
       #---
       return lb_arr.flatten
-      #return lb_arr.flatten.sort{|a, b| a.inspect_couple <=> b.inspect_couple }
-    else Zero
     end
   end
   #
@@ -95,13 +93,13 @@ class SymplecticExp
 
   private
   def log2_calc(gen)
-    #binding.pry
+    #binding.pry if gen.letter == 'b'
     result = nil
     @symp_pairs.each do |pair|
-      num = pair.index(gen.letter) # 0 or 1 or nil
-      if not num.nil?
-        num = (num + 1).modulo(2) if gen.inverse?
-        result = LieBracket.new(pair[0], pair[1])*((1/2r) - num)
+      idx = pair.index(gen.letter.upcase) # 0 or 1 or nil
+      unless idx.nil?
+        sgn = (-1)**(idx + ((gen.inverse?) ? 1 : 0 ))
+        result = LieBracket.new(pair[0], pair[1]) * (1/2r) * sgn
       end
     end
     return (result.nil?) ? LieBracket::Zero : result

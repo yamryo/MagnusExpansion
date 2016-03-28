@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-03-28 12:49:30 (ryosuke)>
+# Time-stamp: <2016-03-28 18:19:45 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -158,61 +158,33 @@ class MyApp < Sinatra::Base
     end
     #---
     def calc_ellab(wa,wb)
-      # eq1, eq2, eq3, eq4 = 'emp', 'ty', '!', '?'
-      unless ( (wa.nil? || wa.empty?) || (wb.nil? || wb.empty?) ) then
-        #---
-        lb_arr = calc_symp_log2(wa)
-        vec_arr = []
-        Word.new(wb).each_gen{ |g| vec_arr << g }
-        pair_arr = lb_arr.each_with_object([]) do |lb, couples|
-          couples << vec_arr.map{ |v| [lb, v]}
-        end
-        #---
-        lb_str_arr = lb_arr.map{|lb| (lb*2).to_s }
-        vec_str_arr = vec_arr.map{ |g| (g.inverse? ? '-' : '') + "|#{g.letter}|" }
-        pair_str_arr = lb_str_arr.each_with_object([]) do |lbs, pairs|
-          pairs << vec_str_arr.map{ |vs| lbs + "(#{vs})" }
-        end
-        #---
-        #---
-        eq1 = '1/2' + [lb_str_arr, vec_str_arr].map do |sa|
-          sa.join('+').gsub('+-','-').sub(/.+/, '(\&)')
-        end.join
-        #---
-        # eq2 = pair_str_arr.flatten.join('+').gsub('+-','-').sub(/.+/, '1/2{\&}')
-        # eq3 = pair_arr.flatten(1).map do |c|
-        #   lb = c[0]*2
-        #   lb_f, lb_l = lb.couple[0], lb.couple[1]
-        #   v = (c[1].inverse? ? '-' : '') + "|#{c[1].letter}|"
-        #   #---
-        #   ft = "(#{v}.|#{lb_f.to_s}|)|#{lb_l.to_s}|"
-        #   lt = "(#{v}.|#{lb_l.to_s}|)|#{lb_f.to_s}|"
-        #   ( "#{lb.coeff}" + (ft + '-' + lt).gsub('--','+').sub(/.+/, '{\&}') ).gsub('1', '')
-        # end.join('+').gsub('+-','-').sub(/.+/, '1/2[\&]')
-        # eq4 = pair_arr.flatten(1).map do |pair|
-        #   lb, v = pair[0]*2, pair[1]
-        #   trms = [lb.couple, lb.couple.reverse].map do |cpl|
-        #     int_num = intersection_form(v.letter, cpl[0].to_s) * (v.inverse? ? -1 : 1)
-        #     trm = int_num.to_s + ( (int_num == 0) ? '' : "|#{cpl[1].to_s}|" )
-        #     #trm = (trm + "|#{cpl[1].to_s}|").gsub('1', '') unless int_num == 0
-        #   end
-        #   ( "#{lb.coeff}" + trms.join('-').sub(/.+/, '{\&}') )
-        # end.join('+').gsub('+-','-').sub(/.+/, '1/2(\&)')
-        #---
-        eq5 = FormalSum.new()
-        pair_arr.flatten(1).each do |pair|
-          lb, v = pair[0], pair[1]
-          #--- action of lb on v
-          tmp = [lb.couple, lb.couple.reverse].map do |cpl|
-            int_num = intersection_form(v.letter, cpl[0].to_s) * (v.inverse? ? -1 : 1)
-            FormalSum.new(cpl[1])*int_num*lb.coeff
+      raise ArgumentError, 'You need to give two words' if ( (wa.nil? || wa.empty?) || (wb.nil? || wb.empty?) )
+      #---
+      lb_arr = calc_symp_log2(wa)
+      #--- abelianization of the word wb ---
+      wb_abel = FormalSum.new()
+      Word.new(wb).each_gen do |g|
+        coeff = (g.inverse?) ? -1 : 1
+        term = Term.new(g.letter.upcase, coeff)
+        wb_abel = wb_abel + FormalSum.new(term)
+      end
+      #---
+      lb_str = lb_arr.map{|lb| (lb*2).to_s.upcase }.join('+').gsub('+-','-').sub(/.+/, '(\&)')
+      eq1 = '1/2' + lb_str + "(#{wb_abel.simplify.to_s})"
+      #---
+      eq2 = FormalSum.new()
+      lb_arr.each do |lb|
+        #--- action of lb on v
+        wb_abel.terms.each do |trm|
+          lb_act = [lb.couple, lb.couple.reverse].map do |cpl|
+            int_num = intersection_form(trm[:word].downcase, cpl[0].to_s) * trm[:coeff]
+            FormalSum.new(cpl[1]) * int_num * lb.coeff
           end
-          #---
-          eq5 = eq5 + ( tmp[0] - tmp[1] )
+          eq2 = eq2 + ( lb_act[0] - lb_act[1] )
         end
         #---
       end
-      return [eq1, eq5.simplify]
+      return [eq1, eq2, eq2.simplify]
     end
     #---
     def intersection_form(s1, s2)
