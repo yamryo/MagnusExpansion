@@ -2,13 +2,14 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-03-26 04:32:31 (ryosuke)>
+# Time-stamp: <2016-03-28 12:49:30 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
 require('slim')
 require('data_mapper')
 #require('date')
+require('pry')
 
 require('FoxCalc')
 require('StdMagnusExp')
@@ -95,7 +96,7 @@ class MyApp < Sinatra::Base
         lba = calc_ellab(params[:wb], params[:wa])
         @output11 = lab_str + ' = ' + lab.join(' = ')
         @output12 = lba_str + ' = ' + lba.join(' = ')
-        @output2 = lab_str + '+' + lba_str + ' = ' + lab[2] + '+' +  lba[2]
+        @output2 = lab_str + '+' + lba_str + ' = ' + (lab[-1] + lba[-1]).simplify.to_s
       end
     end
     slim :symplectic_ellab
@@ -131,7 +132,7 @@ class MyApp < Sinatra::Base
       re = Regexp.new( "[^#{sympgens + sympgens.upcase}]" )
       (re =~ w).nil?
     end
-    #--- calculators
+    #--- calculators ---
     def calc_fc(w, g)
       unless (w.nil? || w.empty?) then
         gg = (g.nil?) ? Generator.new('a') : Generator.new(g)
@@ -139,12 +140,14 @@ class MyApp < Sinatra::Base
         "#{w}  --(d/d#{g})-->  #{FoxCalculator[gg].send(ww).to_s}"
       end
     end
+    #---
     def calc_std(w)
       unless (w.nil? || w.empty?) then
         theta = StdMagnusExp.instance
         "#{w}  -->  #{theta.expand(Word.new(w)).to_s}"
       end
     end
+    #---
     def calc_symp_log2(w)
       unless (w.nil? || w.empty?) then
         theta = SymplecticExp.instance
@@ -153,6 +156,7 @@ class MyApp < Sinatra::Base
         [LieBracket.new("0")]
       end
     end
+    #---
     def calc_ellab(wa,wb)
       # eq1, eq2, eq3, eq4 = 'emp', 'ty', '!', '?'
       unless ( (wa.nil? || wa.empty?) || (wb.nil? || wb.empty?) ) then
@@ -174,6 +178,7 @@ class MyApp < Sinatra::Base
         eq1 = '1/2' + [lb_str_arr, vec_str_arr].map do |sa|
           sa.join('+').gsub('+-','-').sub(/.+/, '(\&)')
         end.join
+        #---
         # eq2 = pair_str_arr.flatten.join('+').gsub('+-','-').sub(/.+/, '1/2{\&}')
         # eq3 = pair_arr.flatten(1).map do |c|
         #   lb = c[0]*2
@@ -193,18 +198,23 @@ class MyApp < Sinatra::Base
         #   end
         #   ( "#{lb.coeff}" + trms.join('-').sub(/.+/, '{\&}') )
         # end.join('+').gsub('+-','-').sub(/.+/, '1/2(\&)')
-        eq5 = pair_arr.flatten(1).map do |pair|
-          lb, v = pair[0]*2, pair[1]
-          trms = [lb.couple, lb.couple.reverse].map do |cpl|
+        #---
+        eq5 = FormalSum.new()
+        pair_arr.flatten(1).each do |pair|
+          lb, v = pair[0], pair[1]
+          #--- action of lb on v
+          tmp = [lb.couple, lb.couple.reverse].map do |cpl|
             int_num = intersection_form(v.letter, cpl[0].to_s) * (v.inverse? ? -1 : 1)
-            trm = (lb.coeff*int_num).to_s + ( (int_num == 0) ? '' : "|#{cpl[1].to_s}|" )
-          end.join('-').gsub('--','+').gsub('1', '')
-        end.join('+').gsub('+-','-').sub(/.+/, '1/2(\&)')
-        eq6 = eq5.gsub(/[+-]*0/,'').sub(/(\(\+)(.+)/, '(\2')
+            FormalSum.new(cpl[1])*int_num*lb.coeff
+          end
+          #---
+          eq5 = eq5 + ( tmp[0] - tmp[1] )
+        end
         #---
       end
-      return [eq1, eq5, eq6]
+      return [eq1, eq5.simplify]
     end
+    #---
     def intersection_form(s1, s2)
       #raise ArgumentError, 'At least one of the argument is not a string' unless (s1.is_a? String && s2.is_a? String)
       s_pair = [s1, s2]
