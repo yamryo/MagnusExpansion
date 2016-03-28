@@ -1,6 +1,6 @@
 / ----------------------------------------------
 /        app/view/symplectic_ellab.slim
-/ Time-stamp: <2016-03-28 16:25:30 (ryosuke)>
+/ Time-stamp: <2016-03-29 00:16:21 (ryosuke)>
 / ----------------------------------------------
 / variables --------------------------
 ruby:
@@ -20,12 +20,13 @@ blockquote
       .form-group>
         label> for="word1"
           ' word 1:
-        input type="text" name="wa" class="form-control"
+        input type="text" name="wa" class="form-control" autocomplete="off"
       .form-group>
         label> for="word2"
           '  word 2:
-        input type="text" name="wb" class="form-control"
-      button type="submit" class="btn btn-default" Submit
+        input type="text" name="wb" class="form-control" autocomplete="off"
+      button type="submit" class="btn btn-default"
+        | Submit
 
 / alert ------------------------------
 - if @params[:wa] == 'alert'

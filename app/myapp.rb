@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-03-28 18:19:45 (ryosuke)>
+# Time-stamp: <2016-03-29 00:06:53 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -22,7 +22,7 @@ class MyApp < Sinatra::Base
                   {name: "Standard", path: "/Standard", title: "Standard Magnus Expansion"},
                   {name: "Symplectic", path: "/Symplectic", title: "Symplectic Expansion"}]
 
-  SymplecticGens = [%w[a b], %w[s t], %w[x y]]
+  SymplecticBasis = [%w[A B], %w[S T], %w[X Y]]
 
   #---[ Filter ]------------------------------------
   before do
@@ -128,8 +128,9 @@ class MyApp < Sinatra::Base
       request.path_info.include?(path)
     end
     def symplectic_check(w)
-      sympgens = SymplecticGens.flatten.join
-      re = Regexp.new( "[^#{sympgens + sympgens.upcase}]" )
+      w.delete!('()')
+      letters = SymplecticBasis.flatten.join
+      re = Regexp.new( "[^#{letters.downcase + letters.upcase}]" )
       (re =~ w).nil?
     end
     #--- calculators ---
@@ -177,22 +178,22 @@ class MyApp < Sinatra::Base
         #--- action of lb on v
         wb_abel.terms.each do |trm|
           lb_act = [lb.couple, lb.couple.reverse].map do |cpl|
-            int_num = intersection_form(trm[:word].downcase, cpl[0].to_s) * trm[:coeff]
+            int_num = intersection_form(trm[:word], cpl[0].to_s) * trm[:coeff]
             FormalSum.new(cpl[1]) * int_num * lb.coeff
           end
           eq2 = eq2 + ( lb_act[0] - lb_act[1] )
         end
         #---
       end
-      return [eq1, eq2, eq2.simplify]
+      return [eq1, eq2.simplify]
     end
     #---
     def intersection_form(s1, s2)
-      #raise ArgumentError, 'At least one of the argument is not a string' unless (s1.is_a? String && s2.is_a? String)
+      raise ArgumentError, 'At least one of the argument is not a string' unless ( s1.is_a?(String) && s2.is_a?(String) )
       s_pair = [s1, s2]
-      if SymplecticGens.include?(s_pair) then
+      if SymplecticBasis.include?(s_pair) then
         1
-      elsif SymplecticGens.include?(s_pair.reverse) then
+      elsif SymplecticBasis.include?(s_pair.reverse) then
         -1
       else
         0

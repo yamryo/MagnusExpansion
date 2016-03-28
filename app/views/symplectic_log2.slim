@@ -1,6 +1,6 @@
 /-----------------------------------------------
 /        app/view/symplectic_log2.haml
-/ Time-stamp: <2016-03-25 13:53:26 (ryosuke)>
+/ Time-stamp: <2016-03-29 00:16:55 (ryosuke)>
 /-----------------------------------------------
 /-- variables --------------------------
 ruby:
@@ -19,10 +19,10 @@ blockquote
       | Input a word:
   .panel-body
     form.form-inline action="/Symplectic/log2" method="post"
-      .form-group
+      .form-group>
         input.form-control> type="text" name="word" autocomplete="off"
-        button type="submit" class="btn btn-default"
-          | Submit
+      button type="submit" class="btn btn-default"
+        | Submit
 
 /-- alert ------------------------------
 - if @alert
