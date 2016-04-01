@@ -1,20 +1,19 @@
 / ----------------------------------------------
 /        app/view/symplectic.haml
-/ Time-stamp: <2016-03-25 14:53:40 (ryosuke)>
+/ Time-stamp: <2016-04-02 02:39:06 (ryosuke)>
 / ----------------------------------------------
 / variables --------------------
 ruby:
-  clist = %w[log2 ellab]
+
 / title ------------------------
-blockquote
-  | Symplectic Expansion
+blockquote = Calculators.dig(:symplectic, :title)
 
 / list -------------------------
 h4 Choose a calculator
 
 ul.list-group
-  - clist.each do |name|
+  - Calculators.dig(:symplectic, :sub).each do |key|
     li.list-group-item
-      a href="/Symplectic/#{name}" = name
+      a href=Calculators.dig(key, :path) = Calculators.dig(key, :name)
 
 / End of file -------------------------

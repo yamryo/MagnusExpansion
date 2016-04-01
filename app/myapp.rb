@@ -2,13 +2,12 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-03-29 00:06:53 (ryosuke)>
+# Time-stamp: <2016-04-02 03:06:54 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
 require('slim')
 require('data_mapper')
-#require('date')
 require('pry')
 
 require('FoxCalc')
@@ -18,15 +17,23 @@ require('SymplecticExp')
 #------------------------------------------------------
 class MyApp < Sinatra::Base
 
-  Calculators = [ #{name: "FoxCalc", path: "/FoxCalc", title: "Fox Calculas"},
-                  {name: "Standard", path: "/Standard", title: "Standard Magnus Expansion"},
-                  {name: "Symplectic", path: "/Symplectic", title: "Symplectic Expansion"}]
-
+  #---[ Constants ]---------------------------------
+  Calculators = {
+    magnus: {name: "Magnus Expansion", path: "/", title: "Magnus Expansion Calculator", sub: [:standard, :symplectic], level: 0},
+    #---
+    standard: {name: "Standard", path: "/Standard", title: "Standard Magnus Expansion", sub: [:foxcalc], level: 1},
+    foxcalc: {name: "Foxcalc", path: "/Standard", title: "Fox calculus", level: 2},
+    #---
+    symplectic: {name: "Symplectic", path: "/Symplectic", title: "Symplectic Expansion", sub: [:log2, :ellab], level: 1},
+    log2: {name: "Symplectic#log2", path: "/Symplectic/log2", title: "The degree 2 part of log of Symplectic Expansion", level: 2},
+    ellab: {name: "Symplectic#ellab", path: "/Symplectic/ellab", title: "l(a)|b| with a symplectic expansion", level: 2},
+  }
+  #---
   SymplecticBasis = [%w[A B], %w[S T], %w[X Y]]
+  #-------------------------------------------------
 
   #---[ Filter ]------------------------------------
   before do
-    @calc_list = Calculators.map{|x| x[:name]}
   end
   #-------------------------------------------------
 

@@ -1,16 +1,17 @@
 /-----------------------------------------------
 /        app/view/symplectic_log2.haml
-/ Time-stamp: <2016-03-29 00:16:55 (ryosuke)>
+/ Time-stamp: <2016-04-02 02:53:52 (ryosuke)>
 /-----------------------------------------------
 /-- variables --------------------------
 ruby:
   glyph_option = { :class => "glyphicon glyphicon-exclamation-sign",
                    :aria => { :hidden => "true" } }
   headings = ["id", "word", "result", "created"]
+  mytitle = Calculators.dig(:log2, :title)
+  mypath = Calculators.dig(:log2, :path)
 
 /-- title ------------------------------
-blockquote
-  | The degree 2 part of log of Symplectic Expansion
+blockquote = mytitle
 
 /-- Input form -------------------------
 .panel.panel-default
@@ -18,7 +19,7 @@ blockquote
     h3.panel-title
       | Input a word:
   .panel-body
-    form.form-inline action="/Symplectic/log2" method="post"
+    form.form-inline action=mypath method="post"
       .form-group>
         input.form-control> type="text" name="word" autocomplete="off"
       button type="submit" class="btn btn-default"
@@ -52,7 +53,7 @@ blockquote
         /-- botton --
         td
           span.pull-right
-            a.btn.btn-warning href="/Symplectic/log2/delete/#{item[:id]}"
+            a.btn.btn-warning href=(mypath + "/delete/#{item[:id]}")
               | Delete
 
 /-- End of file -------------------------

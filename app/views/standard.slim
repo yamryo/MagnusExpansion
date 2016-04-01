@@ -1,9 +1,9 @@
 / ----------------------------------------------
 /        app/view/standard.slim
-/ Time-stamp: <2016-03-18 18:31:36 (ryosuke)>
+/ Time-stamp: <2016-04-02 02:41:06 (ryosuke)>
 / ----------------------------------------------
 / title -------------------------------
-blockquote Standard Magnus Expansion and Fox Caluclus
+blockquote = Calculators.dig(:standard, :title)
 
 / Input form --------------------------
 .panel.panel-default
@@ -18,11 +18,11 @@ blockquote Standard Magnus Expansion and Fox Caluclus
 / Output ------------------------------
 .bs-docs-example data={ content: "OUTPUT" } = @output_st
 
-- 3.times
+- 2.times
   br
 
 / title ------------------------------
-blockquote Fox caluclus
+blockquote = Calculators.dig(:foxcalc, :title)
 
 / Input form -------------------------
 .panel.panel-default
