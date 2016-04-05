@@ -1,6 +1,6 @@
 /-----------------------------------------------
 /        app/view/symplectic_log2.haml
-/ Time-stamp: <2016-04-02 02:53:52 (ryosuke)>
+/ Time-stamp: <2016-04-05 13:04:24 (ryosuke)>
 /-----------------------------------------------
 /-- variables --------------------------
 ruby:
@@ -30,10 +30,6 @@ blockquote = mytitle
   .alert.alert-warning role="alert"
     span{ glyph_option }
         | You can input the letters 'abstxy' and their capitals only.
-- if @empty
-  .alert.alert-warning role="alert"
-    span{ glyph_option }
-      | The word which you entered was equal to the empty word.
 
 /-- History ----------------------------
 .bs-docs-example data={ content: "HISTORY" }

@@ -1,7 +1,7 @@
 #
 # SymplecticExp.rb
 #
-# Time-stamp: <2016-04-05 10:04:22 (ryosuke)>
+# Time-stamp: <2016-04-05 13:07:17 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -77,7 +77,6 @@ class SymplecticExp
   #
   def log2_simplify(word)
     lb_arr = log2(word)
-    #binding.pry
     lb_arr.map!{ |lb| (lb.couple[0] < lb.couple[1])? lb : lb.flip }
     lb_arr.sort!{|a, b| a.inspect_couple <=> b.inspect_couple }
     if lb_arr.kind_of?(LieBracket)
@@ -97,7 +96,7 @@ class SymplecticExp
       end
     end
     #---
-    return lb_arr_smp
+    return (lb_arr_smp.empty?) ? [FormalSum::Zero] : lb_arr_smp
   end
 
   private

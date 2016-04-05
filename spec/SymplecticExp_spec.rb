@@ -1,7 +1,7 @@
 #
 # SympMagnusExp_spec.rb
 #
-# Time-stamp: <2016-04-05 10:05:07 (ryosuke)>
+# Time-stamp: <2016-04-05 11:17:27 (ryosuke)>
 #
 require('spec_helper')
 
@@ -57,7 +57,7 @@ describe "SymplecticExp" do
         end
       end
       #
-      context "theta_std('A')" do
+      context "theta_std('a')*theta_std('A')" do
         let(:fs_A) { Theta_symp.expand(@gen_a.invert!) }
         #subject { (fs_a*fs_A).simplify.homo_part(0..3).to_s }
         subject { (fs_a*fs_A).simplify.homo_part(0..2).to_s }

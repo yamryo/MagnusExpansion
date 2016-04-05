@@ -5,3 +5,4 @@
 /old
 Gemfile.lock
 .DS_Store
+symplectic_history.db

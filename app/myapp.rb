@@ -2,7 +2,7 @@
 #
 # app/myapp.rb
 #
-# Time-stamp: <2016-04-02 03:06:54 (ryosuke)>
+# Time-stamp: <2016-04-05 13:07:40 (ryosuke)>
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../src/')
 
 require('sinatra/base')
@@ -71,12 +71,10 @@ class MyApp < Sinatra::Base
   #--- log2
   get('/Symplectic/log2/?:word?') do
     @alert = (params[:word] == 'alert')
-    @empty = false
     #---
     unless (@alert || params[:word].nil?)
       mylb = calc_symp_log2(params[:word]).map{|lb| lb.to_s }.join('+').gsub('+-','-')
       item = Item.create(:word => params[:word], :result => mylb, :created => Time.now)
-      @empty = !(item.saved?)
     end
     @items = Item.all(:order => :created.desc)
     #---
