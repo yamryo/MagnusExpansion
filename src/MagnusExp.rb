@@ -1,7 +1,7 @@
 #
 # MagnusExp.rb
 #
-# Time-stamp: <2012-10-02 14:46:51 (ryosuke)>
+# Time-stamp: <2016-04-04 16:38:09 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -10,7 +10,7 @@ require('FormalSum')
 #-----------------------------------------------
 module Expander
   extend self
-  
+
   Zero = FormalSum::Zero
   One = FormalSum::One
 
@@ -18,10 +18,13 @@ module Expander
     marr = []
     #
     if word.is_a?(Generator) then
-      marr << self.map(word)
-    elsif word.is_a?(Word) 
+      gen = word
+      marr << mapping(gen)
+    elsif word.is_a?(Word)
       word.contract
-      word.each_char{ |chr| marr << self.map(Generator.new(chr)) }
+      word.each_gen{ |gen| marr << mapping(gen) }
+    elsif word.is_a?(String)
+      self.expand(Word.new(word))
     else
       raise ArgumentError, "The argument is not a Word."
     end
@@ -29,26 +32,33 @@ module Expander
     marr.reverse!
     until marr.size == 1
       marr << (marr.pop)*(marr.pop)
-      marr.last.terms.delete_if { |t| t.degree >= mod_deg }
+      #marr.last.terms.delete_if { |t| t.degree >= mod_deg }
     end
     #
     return marr[0].simplify
   end
-  
-  def map(gen)
+
+  def higher(gen)
+  end
+
+  private
+  def abelianize(gen)
+    myterm = Term.new(gen.letter.upcase)
+    FormalSum.new(myterm)*(gen.inverse? ? -1 : 1)
+  end
+
+  def first_deg(gen)
+    abelianize(gen)
+  end
+
+  def mapping(gen)
     # maps a Generator x to a FormalSum 1+X+higher(x).
-    # higher(g) will be a method of a class which includes this module. higher_inverse(g) too.
-    #
+    # the method higher(g) will be defined in a class which includes this module.
+    #---
     gen = Generator.new(gen[0]) if gen.is_a?(String)  # Strings are acceptable
     raise ArgumentError, "The argument is not a Generator" unless gen.is_a?(Generator)
-    #
-    g = FormalSum.new(Term.new(gen.letter))
-    fsOne = FormalSum.new(One)
-    return case gen.inverse?
-           when false then fsOne + g + higher(g)
-           when true then fsOne - g + higher_inverse(g)
-           when nil then fsOne
-           else raise Error end
+    #---
+    return (gen.to_char == '1') ? One : One + first_deg(gen) + self.higher(gen)
   end
   #
 end

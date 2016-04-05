@@ -1,29 +1,27 @@
 #
 # StdMagnusExp.rb
 #
-# Time-stamp: <2012-10-02 13:29:53 (ryosuke)>
+# Time-stamp: <2016-04-04 01:42:57 (ryosuke)>
 #
-
 require('MagnusExp')
 require('singleton')
 
 #-----------------------------------------------
-class StdMagnusExp 
+class StdMagnusExp
   include Expander, Singleton
-  
-  def initialize(m=4)
-    @mod_deg = m
+  #---
+  def expand(word)
+    super(word).homo_part(0..4)
   end
-  attr_accessor :mod_deg
-
-  def higher(*gfs)
-    Zero
+  #---
+  def higher(gen)
+    unless gen.inverse? then
+      Zero
+    else
+      ga = abelianize(gen)
+      ga*ga + ga*ga*ga + ga*ga*ga*ga
+    end
   end
-
-  def higher_inverse(gfs)
-    gfs*gfs-gfs*gfs*gfs
-  end
-
 end
 #-----------------------------------------------
 

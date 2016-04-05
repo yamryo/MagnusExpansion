@@ -1,7 +1,7 @@
 #
 # SymplecticExp.rb
 #
-# Time-stamp: <2016-03-28 18:18:26 (ryosuke)>
+# Time-stamp: <2016-04-05 10:04:22 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -14,25 +14,34 @@ require('singleton')
 class SymplecticExp
   include Expander, Singleton
 
-  Default_symp_gens = [%w[A B], %w[S T], %w[X Y]]
+  DefaultSympBasis = [%w[A B], %w[S T], %w[X Y]]
 
-  def initialize(pairs_of_gens=Default_symp_gens, m=3)
-    @mod_deg = m
-    @symp_pairs = pairs_of_gens
-    #---
-    @base = []
-    @symp_pairs.each{ |pr| @base << LieBracket.new(pr[0], pr[1])*(1/2r) }
+  def initialize(basis=DefaultSympBasis)
+    @symp_basis = basis
+    # @lb_basis = @symp_basis.map{ |pr| LieBracket.new(pr[0], pr[1])*(1/2r) }
   end
-  attr_accessor :mod_deg
+  attr_reader :symp_basis
 
-  def higher(*gfs)
-    Zero
+  def expand(word)
+    super(word).homo_part(0..2)
   end
-
-  def higher_inverse(gfs)
-    gfs*gfs-gfs*gfs*gfs
+  #---
+  def higher(gen)
+    second_deg(gen) #+ third_deg(gen)
   end
+  #---
+  def second_deg(gen)
+    fsa = abelianize(gen)
+    (fsa*fsa)*(1/2r) + log2_calc(gen).to_fs
+  end
+  # def third_deg(gen)
+  #   fsa, fsb = abelianize(gen), abelianize_partner(gen)
+  #   ell3 = LieBracket.new( fsa*(-1/4r) + fsb*(-1/6r), log2_calc(gen) )
+  #   myfs = second_deg(gen)
+  #   ell3 #- (fsa*fsa*fsa)*(1/3r) #+ (fsa*myfs+myfs*fsa)*(1/2r)
+  # end
 
+  #---
   def log2(word)
     lb_arr = []
     #binding.pry if word == Generator.new('1')
@@ -92,17 +101,29 @@ class SymplecticExp
   end
 
   private
+  def abelianize_partner(gen)
+    partner = FormalSum::Zero
+    @symp_basis.each do |pair|
+      idx = pair.index(gen.letter.upcase) # 0 or 1 or nil
+      unless idx.nil?
+        partner = FormalSum.new(pair[ (idx + 1)%2 ])
+        #*(gen.inverse? ? -1 : 1)
+      end
+    end
+    return partner
+  end
+
   def log2_calc(gen)
-    #binding.pry if gen.letter == 'b'
-    result = nil
-    @symp_pairs.each do |pair|
+    result = LieBracket::Zero
+    @symp_basis.each do |pair|
       idx = pair.index(gen.letter.upcase) # 0 or 1 or nil
       unless idx.nil?
         sgn = (-1)**(idx + ((gen.inverse?) ? 1 : 0 ))
+        #binding.pry
         result = LieBracket.new(pair[0], pair[1]) * (1/2r) * sgn
       end
     end
-    return (result.nil?) ? LieBracket::Zero : result
+    return result
   end
 end
 #-----------------------------------------------

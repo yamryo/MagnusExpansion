@@ -1,7 +1,7 @@
 #
 # FoxCalc.rb
 #
-# Time-stamp: <2014-08-07 14:50:33 (ryosuke)>
+# Time-stamp: <2016-04-04 11:25:59 (ryosuke)>
 #
 $LOAD_PATH.push File.expand_path(File.dirname(__FILE__)+'/../lib/GLA/src/')
 
@@ -14,56 +14,51 @@ module FoxCalculator
   Zero = FormalSum::Zero
   One = FormalSum::One
 
-  #-----
-  def initialize(*arg)
-    if ( arg.size >0 and Generator === arg[0] ) then
-      @generator = arg[0]
-    else
-      @generator = Generator.new('1')
-    end
-    @generator.invert! if @generator.inverse? 
-  end
-  attr_reader :generator
+  ErrMsg01 = "You should set a Generator to @generator."
+  ErrMsg02 = "You should set a Generator which is not inverse."
+  #attr_reader :generator
 
   #-----
   def [](gen)
-    @generator = case gen
-                 when Generator then gen      
-                 when String then Generator.new(gen[0])
-                 else Generator.new('1')
-                 end
+    gen = case gen
+          when Generator then gen
+          when String then Generator.new(gen[0])
+          else
+            raise ArgumentError, ErrMsg01
+          end
+    raise ArgumentError, ErrMsg02 if gen.inverse?
+    @generator ||= gen
     return self
   end
 
-  def send(word)
-    if word.kind_of?(Generator) then
-      myarr ||= calc(word)
+  def derivative(word)
+    raise ArgumentError, ErrMsg01 if @generator.nil?
+    if (word.is_a? Generator) then
+      result = calc(word)
     else
-      raise ArgumentError, "The argument is not a Word." unless word.kind_of?(Word)
-
-      word.contract
-      myarr = [Zero, One]
-      word.each_char do |chr|
-        t = calc(Generator.new(chr))
-        last = myarr.pop
-        myarr.concat [last*t, last*Term.new(chr)]
+      raise ArgumentError, "The argument is not a Word." unless word.is_a? Word
+      fs_arr = [Zero, One]
+      (word.contract).each_gen do |gen|
+        fs = calc(gen)
+        last = fs_arr.pop
+        fs_arr.concat [last*fs, last*FormalSum.new(gen.to_char)]
       end
-      myarr.pop
+      fs_arr.pop
+      result = fs_arr.inject(Zero) { |sum,fs| sum + fs }
     end
     #
-    return FormalSum.new(myarr).to_s
+    return result
   end
 
   #-----
   private
-  def calc(gen) 
-    # (del/del(@generator))(gen) returns Zero, One or Term '-#{gen.to_c}' 
-    # gen = Generator.new(gen[0]) if gen.kind_of?(String)  # can accept a string
-    raise ArgumentError, "The argument is not a Generator." unless gen.kind_of?(Generator)
+  def calc(gen)
+    # (del/del(@generator))(gen) returns Zero, One or a FormalSum '-#{gen.to_char}'
+    raise ArgumentError, "The argument is not a Generator." unless gen.is_a? Generator
 
     if @generator.letter == gen.letter then
-      (!gen.inverse?) ? One : Term.new(gen.to_char, -1)
-    else 
+      (!gen.inverse?) ? One : FormalSum.new("-#{gen.to_char}")
+    else
       return Zero
     end
   end
